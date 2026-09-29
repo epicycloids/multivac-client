@@ -2,6 +2,8 @@
 const $ = id => document.getElementById(id);
 const csrf = document.querySelector('meta[name="multivac-csrf"]').content;
 let snapshot = null, projects = [], current = null, taskShown = null, activeTimer = null, evidenceShown = null;
+let mode = 'assistant', setup = null;
+try { if (localStorage.getItem('multivac-method') === 'chatgpt') mode = 'chatgpt'; } catch {}
 function message(text) { $('message').textContent = text || ''; $('message').hidden = !text; }
 async function api(path, body) {
   const response = await fetch(path, {method: body === undefined ? 'GET' : 'POST', cache:'no-store',
@@ -24,6 +26,9 @@ function options(id, entries, title) {
 }
 function controls() {
   const running = snapshot?.running, state = current?.state;
+  $('mode-assistant').disabled = $('mode-chatgpt').disabled = !!running;
+  $('assistant-check').disabled = !!running;
+  $('work-panel').hidden = mode === 'assistant' && !current;
   $('reserve').disabled = running || !$('project').value || !$('model').value ||
     (current && !['accepted','rejected','cancelled','expired','failed'].includes(state));
   $('run').disabled = running || state !== 'ready' || !$('model').value || !$('confirmed').checked;
@@ -31,12 +36,43 @@ function controls() {
   $('collect').disabled = running || !current;
   $('chatgpt-disconnect').disabled = running;
   $('chatgpt-connect').disabled = running;
-  $('confirmation').hidden = state !== 'ready';
+  $('confirmation').hidden = mode !== 'chatgpt' || state !== 'ready';
   $('web-search').disabled = running;
   $('model').disabled = running;
 }
+function setMode(value) {
+  mode = value;
+  for (const element of document.querySelectorAll('[data-mode]')) element.hidden = element.dataset.mode !== mode;
+  $('mode-assistant').setAttribute('aria-pressed', String(mode === 'assistant'));
+  $('mode-chatgpt').setAttribute('aria-pressed', String(mode === 'chatgpt'));
+  $('confirmed').checked = false;
+  try { localStorage.setItem('multivac-method', mode); } catch {}
+  controls();
+}
+function showSetup() {
+  const profile = setup?.profiles.find(item => item.id === $('harness').value);
+  if (!profile) return;
+  $('assistant-setup').textContent = profile.setup;
+  $('assistant-instructions').textContent = profile.instructions;
+  $('assistant-docs').href = profile.documentation;
+}
+async function loadSetup() {
+  setup = await api('/api/assistant-setup');
+  const previous = $('harness').value;
+  $('harness').replaceChildren(...setup.profiles.map(p => new Option(p.title, p.id)));
+  if (setup.profiles.some(p => p.id === previous)) $('harness').value = previous;
+  $('assistant-check-prompt').textContent = setup.check_prompt;
+  if (!$('assistant-request').value) $('assistant-request').value = setup.example;
+  showSetup();
+}
+async function copy(text) {
+  if (!text) throw new Error('Wait for setup to load, then try again.');
+  try { await navigator.clipboard.writeText(text); message('Copied.'); }
+  catch { message('Select the text above and copy it manually.'); }
+}
 async function refresh() {
   snapshot = await api('/api/state');
+  if (snapshot.running && snapshot.job_kind === 'report' && mode !== 'chatgpt') setMode('chatgpt');
   const account = snapshot.account, platform = snapshot.platform;
   $('platform-origin').textContent = snapshot.origin;
   $('account-status').textContent = account.connected ?
@@ -49,12 +85,12 @@ async function refresh() {
   if (snapshot.contribution.id) current = {...current, ...snapshot.contribution};
   if (current) {
     $('work-title').textContent = current.project_id;
-    $('work-state').textContent = snapshot.running ? (snapshot.job_kind === 'collect' ? 'Recovering saved result' : 'Contribution in progress') : (snapshot.outcome?.state || current.state);
+    $('work-state').textContent = snapshot.running ? (snapshot.job_kind === 'collect' ? 'Recovering saved result' : 'Contribution in progress') : (current.state || snapshot.outcome?.state);
     $('work-id').textContent = `Contribution ${current.id}`;
   }
   if (snapshot.error || snapshot.authorization_error) message(snapshot.error || snapshot.authorization_error);
-  const evidenceKey = current?.id + ':' + (snapshot.outcome?.state || snapshot.error || '');
-  if (!snapshot.running && (snapshot.outcome || snapshot.error) && evidenceKey !== evidenceShown) {
+  const evidenceKey = current?.id + ':' + current?.state + ':' + (snapshot.outcome?.state || snapshot.error || '');
+  if (!snapshot.running && (snapshot.outcome || snapshot.error || ['accepted','rejected'].includes(current?.state)) && evidenceKey !== evidenceShown) {
     await showEvidence(); evidenceShown = evidenceKey;
   }
   controls();
@@ -82,14 +118,24 @@ async function readWork(force) {
 }
 async function showEvidence() {
   const data = await api('/api/evidence');
-  $('evidence').hidden = !data.result && !data.attempt;
-  $('report').textContent = data.result?.artifact?.report || 'No completed report is saved. See the attempt record for details.';
+  $('evidence').hidden = !data.result && !data.attempt && !data.receipt;
+  $('report').textContent = data.result?.artifact?.report || data.receipt?.artifact?.report || data.receipt?.accomplishment || 'No completed report is saved. See the attempt record for details.';
   $('receipt-status').textContent = data.receipt ?
     `${data.receipt.accepted === true ? 'Accepted by the project.' : 'Project assessment received.'} ${data.receipt.accomplishment || ''}${data.receipt.review_required ? ' Further review is required.' : ''}` : 'No project receipt is saved. Retry delivery of a saved report with “Recover saved result & receipt”.';
   $('receipt').textContent = JSON.stringify({attempt:data.attempt, usage:data.result?.usage, receipt:data.receipt ?? null}, null, 2);
 }
 button('platform-connect', () => api('/api/platform/connect', {}));
-button('platform-check', () => api('/api/platform/check', {}));
+button('platform-check', async () => { await api('/api/platform/check', {}); await loadSetup(); });
+button('assistant-check', async () => {
+  const result = await api('/api/assistant/check', {});
+  $('bridge-status').textContent = `${result.note} ${result.tools.length} tools available; no model calls.`;
+});
+button('copy-setup', () => copy($('assistant-setup').textContent));
+button('copy-check', () => copy($('assistant-check-prompt').textContent));
+button('copy-request', () => copy($('assistant-request').value));
+$('harness').addEventListener('change', showSetup);
+$('mode-assistant').addEventListener('click', () => setMode('assistant'));
+$('mode-chatgpt').addEventListener('click', () => setMode('chatgpt'));
 button('chatgpt-connect', async () => {
   const result = await api('/api/chatgpt/connect', {enable_plan:snapshot?.account?.connected === true});
   window.location.assign(result.url);
@@ -132,4 +178,5 @@ $('project').addEventListener('change', () => {
   controls();
 });
 for (const id of ['model','confirmed']) $(id).addEventListener('change', controls);
-refresh().catch(error => message(error.message));
+setMode(mode);
+Promise.all([refresh(), loadSetup()]).catch(error => message(error.message));

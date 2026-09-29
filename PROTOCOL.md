@@ -50,6 +50,10 @@ remain unknown. Interpret receipts according to the project's acceptance scope:
 receiving a report, reproducing a numerical certificate, and accepting a new research
 finding are distinct outcomes.
 
+The local assistant bridge saves `artifact` and `usage` before submitting a result.
+`recover_result` resends this saved result without executing work. Receipt recovery
+preserves the full project response, including any pending scientific review.
+
 The local ChatGPT connector records one exclusive execution attempt before sending
 a Responses request and saves completed output before delivery. Delivery retries
 use that saved output. An interrupted stream remains incomplete. Provider

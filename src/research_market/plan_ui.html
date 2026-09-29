@@ -3,30 +3,50 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="multivac-csrf" content="__CSRF__">
-  <title>Multivac — Contribute with ChatGPT</title>
+  <title>Multivac — Contribute</title>
   <link rel="stylesheet" href="/plan_ui.css"><script src="/plan_ui.js" defer></script>
 </head>
 <body>
 <header><a class="brand" href="/">multivac<span class="tube">▥</span></a><span class="pill">Local connector · Preview</span></header>
 <main>
   <section class="intro"><p class="eyebrow">Multivac research contributions</p>
-    <h1>Contribute with<br>your ChatGPT plan.</h1><p class="lede">Choose a research project, review its task, and contribute a report.</p>
-    <p class="disclosure">Reports use the project’s shared context and optional web search. Your credentials stay on this device.</p>
+    <h1>Contribute to<br>independent research.</h1><p class="lede">Choose your tools, find a project, and see what your contribution accomplished.</p>
   </section>
   <div id="message" role="status" aria-live="polite" hidden></div>
-  <div class="grid">
-    <section class="card"><div class="step">01 <span>Connect</span></div><h2>Connect your accounts</h2>
-      <div class="connection"><h3>Multivac pilot</h3><p id="platform-status">Check your invitation or request a connection.</p>
+  <section class="card platform-card"><div class="step">01 <span>Connect</span></div><h2>Connect to Multivac</h2>
+      <div class="connection"><p id="platform-status">Check your invitation or request a connection.</p>
         <div class="buttons"><button id="platform-connect">Connect to Multivac</button><button id="platform-check" class="secondary">Check approval</button></div>
         <p id="pairing-code" class="code" hidden></p>
       </div>
+  </section>
+  <section class="route-picker" aria-label="Contribution method">
+    <h2>Choose how to contribute</h2>
+    <div class="routes"><button id="mode-assistant" class="route" aria-pressed="true"><strong>Use my assistant</strong><span>Local models, custom harnesses, Claude Code, Qwen, Kimi, or Codex.</span></button><button id="mode-chatgpt" class="route" aria-pressed="false"><strong>Use my ChatGPT plan</strong><span>Generate a research report here with optional web search.</span></button></div>
+  </section>
+  <section id="assistant-panel" class="card" data-mode="assistant">
+    <div class="step">02 <span>Add Multivac to your assistant</span></div><h2>Use your model and tools</h2>
+    <p>Your assistant gets projects, works within your instructions, and returns findings through MCP. Choose models, tool permissions, and spending limits in your assistant.</p>
+    <label for="harness">Assistant or harness</label><select id="harness"><option value="custom">Custom or other MCP assistant</option></select>
+    <p id="assistant-instructions" class="small"></p>
+    <pre id="assistant-setup" tabindex="0"></pre>
+    <div class="buttons"><button id="copy-setup">Copy setup</button><button id="assistant-check" class="secondary">Test MCP bridge</button><a id="assistant-docs" target="_blank" rel="noreferrer">Assistant setup guide ↗</a></div>
+    <p id="bridge-status" class="small">The bridge check starts this client's tools without using a model or reserving work.</p>
+    <h3 class="assistant-next">Check the connection in your assistant</h3><p class="small">After adding the tools and receiving pilot approval, send this request to your assistant.</p>
+    <pre id="assistant-check-prompt"></pre><button id="copy-check" class="secondary">Copy connection check</button>
+    <h3 class="assistant-next">Make a contribution</h3><label for="assistant-request">Edit the projects, limits, or instructions before sending.</label>
+    <textarea id="assistant-request" rows="5"></textarea><button id="copy-request">Copy contribution request</button>
+    <p class="small">Keep this client installed so your assistant can start the bridge. You can close this page. Completed reports and project receipts appear under Previous contributions.</p>
+  </section>
+  <div class="grid" data-mode="chatgpt" hidden>
+    <section class="card"><div class="step">02 <span>Authorize a plan</span></div><h2>Connect your ChatGPT account</h2>
       <div class="connection"><h3>ChatGPT plan</h3><p id="account-status">Not connected.</p>
         <div class="buttons"><button id="chatgpt-connect">Continue with ChatGPT</button><button id="chatgpt-disconnect" class="secondary" hidden>Disconnect</button></div>
         <a href="https://chatgpt.com/settings/usage" target="_blank" rel="noreferrer">Manage app access and limits ↗</a>
       </div>
       <p class="small">Local sign-in and model requests have not been verified with a real account.</p>
     </section>
-    <section class="card"><div class="step">02 <span>Choose</span></div><h2>Choose a project and model</h2>
+    <section class="card"><div class="step">03 <span>Choose</span></div><h2>Choose a project and model</h2>
+      <p class="small">This connector uses project context and optional web search to produce a report. Your credentials stay on this device.</p>
       <button id="load-choices" class="secondary">Load my projects and models</button>
       <label for="project">Research project</label><select id="project"><option value="">Connect to the pilot to load projects</option></select>
       <p id="project-description" class="small"></p>
@@ -37,12 +57,13 @@
       <button id="reserve" disabled>Get a task to review <span>→</span></button>
     </section>
   </div>
-  <section class="card work"><div class="step">03 <span>Review & contribute</span></div>
+  <section id="work-panel" class="card work" hidden><div class="step"><span>Contribution details</span></div>
     <div class="work-heading"><h2 id="work-title">Review your task</h2><span id="work-state" class="pill">No task reserved</span></div>
-    <p id="work-id" class="small">Getting a task does not use your ChatGPT plan.</p>
+    <p id="work-id" class="small">Getting a task does not start model execution.</p>
     <details id="task-details" hidden><summary>Read the project’s task and shared context</summary><pre id="task"></pre></details>
     <label id="confirmation" class="check" hidden><input id="confirmed" type="checkbox">I have reviewed this task and authorize sending it to OpenAI and using my selected ChatGPT plan within this allowance.</label>
-    <div class="buttons"><button id="run" disabled>Start contribution</button><button id="cancel" class="secondary" disabled>Cancel contribution</button><button id="collect" class="secondary" disabled>Recover saved result & receipt</button></div>
+    <div class="buttons"><button id="run" data-mode="chatgpt" hidden disabled>Start contribution</button><button id="cancel" class="secondary" disabled>Cancel contribution</button><button id="collect" class="secondary" disabled>Recover saved result & receipt</button></div>
+    <p class="small" data-mode="assistant">When cancelling, also ask your assistant to stop its local work.</p>
     <p class="small">Results go to the selected project. Check its receipt for the assessment; scientific claims may still need verification.</p>
     <div id="evidence" hidden><h3>Your contribution</h3><pre id="report"></pre><div id="receipt-status" class="receipt"></div><details><summary>Usage and project receipt</summary><pre id="receipt"></pre></details></div>
   </section>

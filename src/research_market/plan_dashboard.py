@@ -12,9 +12,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from .assistant_setup import assistant_setup, check_assistant_bridge
 from .chatgpt_plan import PlanError
 from .models import Offer
 from .plan_contribution import collect_plan_result, contribution_directory, run_plan_report
+from .remote_client import assistant_result_directory
 
 TERMINAL = {"accepted", "rejected", "cancelled", "expired", "failed"}
 
@@ -57,6 +59,9 @@ class Dashboard:
 
     def action(self, route, value):
         with self.lock:
+            if route == "/api/assistant/check":
+                self.idle()
+                return asyncio.run(check_assistant_bridge(self.remote))
             if route == "/api/platform/connect":
                 self.platform = self.remote.connect("Multivac local dashboard")
                 return self.platform
@@ -146,6 +151,11 @@ class Dashboard:
                 else:
 
                     async def work():
+                        if (
+                            assistant_result_directory(self.remote, identifier) / "result.json"
+                        ).is_file():
+                            record = await asyncio.to_thread(self.remote.collect_result, identifier)
+                            return {**record, "contribution_id": identifier}
                         return await collect_plan_result(self.remote, identifier)
 
                 self.outcome = self.error = None
@@ -191,6 +201,8 @@ class Dashboard:
     def read(self, route):
         if route == "/api/state":
             return self.snapshot()
+        if route == "/api/assistant-setup":
+            return assistant_setup(self.remote)
         if route == "/api/models":
             return {"models": self.plan.models()}
         if route == "/api/projects":
@@ -202,11 +214,19 @@ class Dashboard:
                 if not self.current:
                     raise ValueError("Choose a contribution first.")
                 path = contribution_directory(self.remote, self.current["id"])
-                return {
+                assistant_path = assistant_result_directory(self.remote, self.current["id"])
+                if (assistant_path / "result.json").is_file():
+                    path = assistant_path
+                evidence = {
                     name: json.loads((path / (name + ".json")).read_text())
                     for name in ("attempt", "result", "receipt")
                     if (path / (name + ".json")).is_file()
                 }
+                if "receipt" not in evidence:
+                    record = self.remote.contribution(self.current["id"], timeout=10)
+                    if record.get("receipt") is not None:
+                        evidence["receipt"] = record["receipt"]
+                return evidence
         raise ValueError("Unknown page.")
 
     def close(self):

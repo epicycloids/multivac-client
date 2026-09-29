@@ -11,6 +11,7 @@ from pathlib import Path
 import typer
 from cryptography.hazmat.primitives import serialization
 
+from .assistant_setup import Harness
 from .models import Offer
 from .remote_client import DEFAULT_ORIGIN, RemoteClient, bridge, owner_key
 
@@ -190,9 +191,16 @@ def start(ctx: typer.Context, identifier: str):
 @app.command()
 def submit(ctx: typer.Context, identifier: str, result: Path):
     """Submit artifact and usage as a JSON object. Retry with the same result if needed."""
-    show(
-        ctx.obj.call("POST", f"/contributions/{identifier}/result", json.loads(result.read_text()))
-    )
+    output = json.loads(result.read_text())
+    if not isinstance(output, dict):
+        raise ValueError("A result must contain artifact and usage objects.")
+    show(ctx.obj.submit_result(identifier, output.get("artifact"), output.get("usage")))
+
+
+@app.command("collect")
+def collect(ctx: typer.Context, identifier: str):
+    """Retry delivery of a saved assistant result and collect its receipt."""
+    show(ctx.obj.collect_result(identifier))
 
 
 @app.command()
@@ -286,11 +294,15 @@ def mcp(ctx: typer.Context):
         Resubmit an identical result to retry delivery without rerunning work. The project issues
         the receipt, which may acknowledge evidence awaiting scientific review.
         """
-        return client.call(
-            "POST",
-            f"/contributions/{contribution_id}/result",
-            {"artifact": artifact, "usage": usage},
-        )
+        return client.submit_result(contribution_id, artifact, usage)
+
+    @server.tool()
+    def recover_result(contribution_id: str) -> dict:
+        """Retry delivery of the locally saved result and retrieve the project's receipt.
+
+        Use after an interrupted delivery. The saved result is reused; do not repeat research.
+        """
+        return client.collect_result(contribution_id)
 
     @server.tool()
     def cancel_contribution(contribution_id: str) -> dict:
@@ -313,36 +325,39 @@ def projects(ctx: typer.Context):
 
 
 @app.command("assistant-config")
-def assistant_config(ctx: typer.Context):
-    """Print MCP configuration and a Codex install command. Credentials are omitted."""
-    import shlex
-    import sys
+def assistant_config(ctx: typer.Context, harness: Harness | None = None):
+    """Print local assistant setup. Credentials are omitted."""
+    from .assistant_setup import assistant_setup
 
-    client = ctx.obj
-    oversight = client.config.get("identity", {}).get("role") == "overseer"
-    name = "multivac-overseer" if oversight else "multivac"
-    args = [
-        "-m",
-        "research_market.client_entry",
-        "--origin",
-        client.origin,
-        "--connection",
-        client.path.stem,
-        "--data-dir",
-        str(client.directory.parent),
-        "overseer-mcp" if oversight else "mcp",
-    ]
-    show(
-        {
-            "mcpServers": {name: {"command": sys.executable, "args": args}},
-            "codex_command": shlex.join(["codex", "mcp", "add", name, "--", sys.executable, *args]),
-            "example": (
-                "Inspect allocation activity and the current policy. Explain whether any change is justified by the evidence; keep contributor limits and project admission intact."
-                if oversight
-                else "Explore my approved projects and contribute up to ten minutes with this assistant. Inspect the task first; use only permitted resources and return findings and limitations. Show me the receipt."
-            ),
-        }
-    )
+    setup = assistant_setup(ctx.obj)
+    if harness is not None:
+        profile = next(p for p in setup["profiles"] if p["id"] == harness.value)
+        show({**profile, "example": setup["example"], "check_prompt": setup["check_prompt"]})
+    else:
+        show(setup)
+
+
+@app.command("check-assistant")
+def check_assistant(ctx: typer.Context):
+    """Check MCP bridge startup and tool discovery. Uses no models or project work."""
+    from .assistant_setup import check_assistant_bridge
+
+    show(asyncio.run(check_assistant_bridge(ctx.obj)))
+
+
+@app.command("dashboard")
+def dashboard(
+    ctx: typer.Context, account: str = "default", port: int = 0, open_browser: bool = True
+):
+    """Open local setup for an existing assistant or the ChatGPT plan connector."""
+    from .chatgpt_plan import PlanClient
+    from .plan_dashboard import serve_dashboard
+
+    plan = PlanClient(ctx.obj.directory / "chatgpt-plan", account)
+    try:
+        serve_dashboard(ctx.obj, plan, port=port, open_browser=open_browser)
+    finally:
+        plan.http.close()
 
 
 @app.command()

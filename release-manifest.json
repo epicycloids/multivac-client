@@ -1,6 +1,6 @@
 {
   "name": "multivac-client",
-  "version": "0.4.0a1",
+  "version": "0.4.0a2",
   "files": [
     {
       "path": "src/research_market/__init__.py",
@@ -28,11 +28,15 @@
     },
     {
       "path": "src/research_market/remote_cli.py",
-      "sha256": "fccda02a63ce3ab080207b26900c1048f35864d649a06b05308d13b1154d5300"
+      "sha256": "1b634d1b24dd1f32874c7a620a00fb02f9c02ec9630088876fc2d8e462bdb3d4"
     },
     {
       "path": "src/research_market/remote_client.py",
-      "sha256": "d260f338de8c24c171f6f94eda80a6e2c963c5995d4afe83c84d9021ebbe12db"
+      "sha256": "6ef31bfafcc870750dfb8d4b88333feb0c60ac16fa176d20d2f223ba7e62e7f4"
+    },
+    {
+      "path": "src/research_market/assistant_setup.py",
+      "sha256": "917feca3df2ac915ad9c0b5b25244fdb9de25919e7bbf7a7c89443c51a2f37fc"
     },
     {
       "path": "src/research_market/context_bundle.py",
@@ -60,19 +64,19 @@
     },
     {
       "path": "src/research_market/plan_dashboard.py",
-      "sha256": "98527a42b583d73a76517bb1bc524e7c78d05e1fef800fb8afc1428dc2d0e44d"
+      "sha256": "094bd78ebc31aa47f7a1e6616b388722eb42e49d93ed1bf99725c18116ab894a"
     },
     {
       "path": "src/research_market/plan_ui.html",
-      "sha256": "aa56c02b3b5d5fd1fe8ec495c662d9511b3a382123e672c262a43c0a2cf64c2c"
+      "sha256": "110bbc762d9f3830580afc60a937d9b7894bf32b0447a07dddc907bc4b4c56d3"
     },
     {
       "path": "src/research_market/plan_ui.css",
-      "sha256": "5bf7efcb9c427cea611d88266e67c7df1e856ef4bdc603c482fbeb3923e4deaf"
+      "sha256": "96c31320580e0825e770c10e8a1edc37adb6a77764cca8f6636980ca871afb22"
     },
     {
       "path": "src/research_market/plan_ui.js",
-      "sha256": "c6070cf91557157124fd04d515e903a6ef16ae3dd1ed22a3e9c094615bd48b16"
+      "sha256": "c84181313dc1d7f664ec51d933a956319fa023c78bc5ca4de4dfbdb9f0861ee5"
     },
     {
       "path": "tests/conftest.py",
@@ -88,19 +92,23 @@
     },
     {
       "path": "tests/test_plan_dashboard.py",
-      "sha256": "089ef236bf29648657e8f5cf911bae8979be1601692facc4b69e578a85fecc6b"
+      "sha256": "9a45fee38731c675a5b43414c7b7fdf18d22aca9e5ac27ef4c4a5039514a8b6e"
     },
     {
       "path": "tests/test_project_starter.py",
       "sha256": "4d9c5f8b44648920c1b7a6eddb125150dd0abaf5d166e1dc51afd67220bff7b1"
     },
     {
+      "path": "tests/test_assistant_setup.py",
+      "sha256": "dc0e41524b5d2b2cff9bad904edb9b0dffc882a4d825621496f111fd9002c96e"
+    },
+    {
       "path": "README.md",
-      "sha256": "31b117bfba4dbc8b477e5cbb47ec79d3801581e034e768364e6915dbf850971f"
+      "sha256": "89aafdd0202d1f3d0e86d9d2d5b4611f331191092ef8b1be29e7da2ac0cb7a6d"
     },
     {
       "path": "PROTOCOL.md",
-      "sha256": "8b21ce51e9aceff78e2eb505f22511643ea3e9906d33da62c908228240962b5f"
+      "sha256": "30e74c630a0db5fd4c8e16b37d0b7d2178c73a377e13d9cdd67e729148883176"
     },
     {
       "path": "PROJECTS.md",
@@ -108,15 +116,19 @@
     },
     {
       "path": "PRIVACY.md",
-      "sha256": "c1b7ed458c146c0f5cf8770fe083e0df1eed176ead252341a58227edf0057356"
+      "sha256": "eb355261cbf6a29b7d6ca069cfa9aea4e948e6ba8e161c4a862abbaf4db01836"
     },
     {
       "path": "ROADMAP.md",
-      "sha256": "1886fa844b05bfe1259df44af1a950ee040b5071ae516f1cc40e8f51eda1269a"
+      "sha256": "1f7e3a042c5d20875392b544ce3b0ead0f852cf2d7fb65e597048c5bc181c784"
     },
     {
       "path": "CONTRIBUTING.md",
       "sha256": "cf1fe05e5bc094e64ec57fde3d67a8f7dbcadceb8b18d32a683c5a86ad4f2bd6"
+    },
+    {
+      "path": "ASSISTANTS.md",
+      "sha256": "adaf8a1406c4f537b9ae7b71f53600f8309815b3f2b1fc9edd3f730d23c11826"
     },
     {
       "path": "LICENSE",
@@ -128,11 +140,11 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "8b3784da5fecfecfae5776624f34e9b87b2cc354b62266dfafd174f6d6b4e7bd"
+      "sha256": "5560e74da8ee103337759ab0dbfe01ee9712307af8885589f811418864ad5c23"
     },
     {
       "path": "uv.lock",
-      "sha256": "c47af188bc0ed0ee4b00171adadd5b78afebe67a9f808c97baf5fbb561fda800"
+      "sha256": "5a68a0d2ef8d68254e82c2018885e4594b6dc4cbb79ec7a0d7b61b30784f8820"
     },
     {
       "path": ".gitignore",

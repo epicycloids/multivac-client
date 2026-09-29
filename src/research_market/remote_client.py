@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import fcntl
 import json
 import os
 import signal
@@ -24,6 +25,14 @@ from .models import Offer
 from .wire import fingerprint
 
 DEFAULT_ORIGIN = "https://multivac.onrender.com"
+
+
+def assistant_result_directory(client, identifier):
+    import re
+
+    if not re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", identifier):
+        raise ValueError("Invalid contribution identifier.")
+    return client.directory / "assistant-contributions" / identifier
 
 
 def private_json(path: Path, value: dict):
@@ -205,8 +214,43 @@ class RemoteClient:
         return self.call("POST", "/contributions", request)
 
     def contribution(self, identifier, *, timeout=90, summary=False):
+        directory = assistant_result_directory(self, identifier)
         path = "/contributions/" + identifier + ("?view=summary" if summary else "")
-        return self.call("GET", path, timeout=timeout)
+        record = self.call("GET", path, timeout=timeout)
+        if record.get("receipt") is not None and (directory / "result.json").is_file():
+            private_json(directory / "receipt.json", record["receipt"])
+        return record
+
+    def submit_result(self, identifier, artifact, usage):
+        """Save an immutable result before delivery and retain the project's receipt."""
+        if not isinstance(artifact, dict) or not isinstance(usage, dict):
+            raise ValueError("A result must contain artifact and usage objects.")
+        output = {"artifact": artifact, "usage": usage}
+        digest = fingerprint(output)
+        directory = assistant_result_directory(self, identifier)
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        lock_fd = os.open(directory / ".result.lock", os.O_CREAT | os.O_WRONLY, 0o600)
+        with os.fdopen(lock_fd, "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            path = directory / "result.json"
+            if path.exists():
+                if fingerprint(json.loads(path.read_text())) != digest:
+                    raise ValueError("This contribution already has a different saved result.")
+            else:
+                private_json(path, output)
+        record = self.call("POST", f"/contributions/{identifier}/result", output)
+        private_json(directory / "delivery.json", record)
+        if record.get("receipt") is not None:
+            private_json(directory / "receipt.json", record["receipt"])
+        return record
+
+    def collect_result(self, identifier):
+        """Retry the saved result without invoking an assistant or repeating research."""
+        path = assistant_result_directory(self, identifier) / "result.json"
+        if not path.is_file():
+            raise ValueError("No assistant result is saved for this contribution.")
+        result = json.loads(path.read_text())
+        return self.submit_result(identifier, result["artifact"], result["usage"])
 
     def save_context(self, identifier, destination=None):
         from .context_bundle import save_bundle

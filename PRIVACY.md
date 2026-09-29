@@ -10,6 +10,7 @@ a public tunnel or reverse proxy. Linux is the tested environment.
 | OpenAI Responses | Your selected model, the issued project task, project-published context, and optional web-search choice. |
 | Multivac | Resource offers, selected project, returned report, reported usage, and contribution status. |
 | Research project | Claim, result, and release messages; returned findings and usage. |
+| Your chosen assistant/provider | Task and context read through MCP, plus information your harness includes in its model requests. |
 
 OAuth tokens and ChatGPT account metadata are not sent to Multivac or the research
 project. The connector does not retrieve your ChatGPT conversation history. The
@@ -18,12 +19,20 @@ An assistant used through the separate MCP route may have other local permission
 review its configuration before use.
 
 Local state includes connection credentials, account registrations, token refresh
-state, attempts, reports, and receipts. Credentials use owner-only file permissions.
+state, attempts, reports, and receipts. Assistant results are saved under
+`assistant-contributions/CONTRIBUTION_ID` within the platform's connection directory;
+ChatGPT reports use `plan-contributions/CONTRIBUTION_ID`. Saved results and
+credentials use owner-only file permissions.
 Keep the state directory private and retain research evidence after failures. Share
 only the public pairing code with the pilot owner; keep connection files and
 provider credentials private.
 
-Use `multivac-plan --account ACCOUNT disconnect` or the dashboard to disconnect.
+Generated assistant setup contains local paths and the platform address, without
+tokens. The bridge check starts a subprocess from the installed client and lists
+its tools. It sends no requests to a model, platform, or project. Model calls made
+by your assistant follow its own provider, billing, and data-handling settings.
+
+Use `multivac-plan --account ACCOUNT disconnect` or the dashboard to disconnect ChatGPT.
 The client reports whether provider revocation was confirmed. If it was not,
 finish disconnecting in [ChatGPT Usage](https://chatgpt.com/settings/usage).
 Do not assume removing local files revokes a remote session.

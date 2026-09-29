@@ -22,17 +22,43 @@ Linux with Python 3.12–3.14 is the supported environment for this preview. Ins
 
 ```sh
 uv sync --python 3.13
-uv run multivac-plan dashboard
+uv run multivac-client dashboard
 ```
 
-The command prints a local URL and opens your browser. Keep its terminal running.
-Research starts only after your confirmation. The local page guides you through:
+The command prints a local URL and opens your browser. Keep its terminal running
+while using the page. Request a Multivac connection and have the pilot owner
+approve its public pairing code, then choose how to contribute:
 
-1. Requesting a Multivac connection and having its public pairing code approved.
-2. Authorizing an eligible ChatGPT account through **Continue with ChatGPT**.
-3. Selecting a project, a model available to your account, and a time allowance.
-4. Reading the project's task and explicitly starting the contribution.
-5. Viewing the saved report, usage information, and the project's receipt.
+1. **Use my assistant:** get setup instructions for your MCP harness, check the
+   bridge, and give your assistant a contribution request in your own words.
+2. **Use my ChatGPT plan:** authorize an eligible account, choose a project and
+   model, review its task, and start a report from the page.
+
+Both routes let you inspect project receipts under **Previous contributions**.
+Opening the dashboard or checking the bridge does not start research. The existing
+`multivac-plan dashboard` command opens the same interface.
+
+## Use an existing assistant
+
+The dashboard generates setup for Claude Code, Qwen Code, Kimi Code, Codex, or a
+custom MCP harness. The assistant uses its own model, tools, and permissions.
+Local models can contribute through a compatible harness without a ChatGPT account.
+
+For terminal setup:
+
+```sh
+uv run multivac-client connect --label "My research assistant"
+# Ask the pilot owner to approve the printed public code.
+uv run multivac-client assistant-config
+uv run multivac-client check-assistant
+```
+
+Add the generated configuration to your assistant, then describe your interests
+and limits. The bridge check verifies local startup and tool discovery without
+using a model or contacting a project. Runs inside each named assistant still need
+verification. See [assistant setup and result recovery](ASSISTANTS.md).
+
+## Use the ChatGPT connector
 
 The ChatGPT connector produces a report from one Responses request containing the
 issued task and project context, with web search available when enabled. This
@@ -48,21 +74,7 @@ on your device. The client never switches account or billing method automaticall
 For account and app eligibility, see OpenAI's
 [plan access for open-source/local apps](https://developers.openai.com/siwc/token-sharing-open-source).
 
-## Use an existing assistant
-
-```sh
-uv run multivac-client connect --label "My research assistant"
-# Ask the pilot owner to approve the printed public code.
-uv run multivac-client assistant-config
-```
-
-Add the printed MCP configuration to your assistant. Tell it which projects interest
-you, what resources it may use, and what findings it may return. This route uses
-your assistant's own harness and permissions, independently of the ChatGPT
-connector. Share only the public pairing code with the pilot owner; keep connection
-files private.
-
-## Use the connector from a terminal
+### From a terminal
 
 After your Multivac pairing code has been approved:
 
@@ -77,7 +89,7 @@ uv run multivac-plan run-report CONTRIBUTION_ID --model MODEL_SLUG
 uv run multivac-plan collect CONTRIBUTION_ID
 ```
 
-`collect` delivers the saved result and retrieves its receipt without another model
+`multivac-plan collect` delivers the saved report and retrieves its receipt without another model
 request. The connector allows one execution attempt per contribution. Delivery
 remains pending until the project returns a receipt. The project's acceptance
 criteria determine what that receipt means; for example, it may acknowledge receipt

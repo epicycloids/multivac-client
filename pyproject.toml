@@ -1,6 +1,6 @@
 [project]
 name = "multivac-client"
-version = "0.4.0a1"
+version = "0.4.0a2"
 description = "Contributor client for independent research projects."
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
