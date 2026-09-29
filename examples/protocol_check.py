@@ -1,4 +1,4 @@
-"""Synthetic local round trip. No model, account, hosted service, or research claim."""
+"""Run a synthetic local contribution cycle without a model, account, or hosted service."""
 
 import json
 import tempfile
@@ -13,7 +13,7 @@ with tempfile.TemporaryDirectory(prefix="multivac-protocol-") as temporary:
         directory,
         "protocol-example",
         "Synthetic protocol example",
-        "Exercise a contribution cycle only; no scientific investigation is requested.",
+        "Exercise the contribution protocol with synthetic test data.",
     )
     project = ProjectInbox(directory)
     offer = Offer(
@@ -27,7 +27,7 @@ with tempfile.TemporaryDirectory(prefix="multivac-protocol-") as temporary:
         "synthetic-example",
         claim["lease_token"],
         {
-            "report": "Synthetic test payload. This example performed no research and used no AI model.",
+            "report": "Synthetic protocol test report.",
             "test_only": True,
             "research_claim": False,
         },

@@ -1,4 +1,4 @@
-"""Synthetic contribution checks; no provider calls or hosted research activity."""
+"""Contribution lifecycle tests using synthetic provider and project fixtures."""
 
 import asyncio
 import json
@@ -31,7 +31,7 @@ class SyntheticPlan:
             if self.error:
                 raise self.error
             return {
-                "report": "Synthetic integration fixture. No scientific research was performed.",
+                "report": "Synthetic integration fixture.",
                 "model": "fixture-astra",
                 "response_id": "fixture-response",
                 "provider_usage": {"input_tokens": 12, "output_tokens": 10},
@@ -49,7 +49,7 @@ def local_cycle(tmp_path):
         directory,
         "protocol-fixture",
         "Synthetic test",
-        "Exercise the protocol only, not scientific research.",
+        "Exercise the contribution protocol with synthetic test data.",
     )
     inbox = ProjectInbox(directory)
     offer = Offer(

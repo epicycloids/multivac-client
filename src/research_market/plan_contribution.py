@@ -1,4 +1,4 @@
-"""One participant-authorized Responses report through the existing contribution cycle."""
+"""Generate a ChatGPT plan report and submit it to a Multivac project."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def contribution_directory(remote, identifier):
 
 
 async def collect_plan_result(remote, identifier, *, wait_seconds=20):
-    """Deliver an already completed report and preserve the actual project receipt."""
+    """Deliver a saved report and retain the project's receipt."""
     if not 0 <= wait_seconds <= 60:
         raise ValueError("Wait between zero and sixty seconds for a project receipt.")
     directory = contribution_directory(remote, identifier)
@@ -40,8 +40,8 @@ async def collect_plan_result(remote, identifier, *, wait_seconds=20):
     summary = False
     while True:
         if summary and record.get("state") != "delivering":
-            # The lightweight polling view deliberately omits receipt evidence.
-            # Fetch the exact project-owned receipt once, after delivery finishes.
+            # The polling view omits receipt evidence. Fetch the full receipt
+            # once delivery finishes.
             record = await asyncio.to_thread(remote.contribution, identifier, timeout=10)
             summary = False
         private_json(directory / "delivery.json", record)
@@ -95,7 +95,7 @@ async def run_plan_report(remote, plan, identifier, *, model, web_search=False, 
     if attempt.exists():
         raise ValueError(
             "This contribution already has a plan-execution attempt. Inspect its saved "
-            "result or failure; use submit for a saved completed result, not another model run."
+            "result or failure; use collect to retry delivery of a completed report."
         )
     record = remote.contribution(identifier)
     if record.get("state") != "ready" or record.get("kind") != "agent":
@@ -120,7 +120,7 @@ async def run_plan_report(remote, plan, identifier, *, model, web_search=False, 
     if len(prompt.encode()) > 750_000:
         raise ValueError("The issued task exceeds this report profile's input limit.")
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-    # Exclusive creation is the durable boundary against double spending on retries.
+    # Exclusive creation prevents retries from starting a second model request.
     try:
         fd = os.open(attempt, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     except FileExistsError:
@@ -213,6 +213,6 @@ async def run_plan_report(remote, plan, identifier, *, model, web_search=False, 
         except Exception:
             pass
         raise
-    # A delivery failure preserves the completed artifact for the ordinary submit
-    # command; it must not turn into another paid/subscription model invocation.
+    # Retain the completed report after a delivery failure so collection can retry
+    # delivery without another model request.
     return await collect_plan_result(remote, identifier)

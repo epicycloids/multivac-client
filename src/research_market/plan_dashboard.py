@@ -1,4 +1,4 @@
-"""Participant-owned loopback UI. Provider credentials never reach JavaScript."""
+"""Local contribution dashboard with provider credentials kept outside JavaScript."""
 
 from __future__ import annotations
 
@@ -172,7 +172,7 @@ class Dashboard:
                             self.error = "Contribution stopped. Preserve the saved attempt; provider usage may be incomplete."
                     except Exception:
                         with self.lock:
-                            self.error = "The request was interrupted. Saved evidence is retained; collect the result without repeating inference."
+                            self.error = "The request was interrupted. Check the contribution's saved state before retrying. Use recovery if a completed report is available."
                     finally:
                         try:
                             record = self.remote.contribution(identifier, summary=True, timeout=5)
@@ -223,7 +223,7 @@ def make_dashboard(remote, plan, *, port=0):
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
-            pass  # Callback query strings and provider errors are never access logs.
+            pass  # Keep callback parameters and provider errors out of access logs.
 
         def reply(self, status, body, content_type="application/json", **headers):
             if content_type == "application/json":

@@ -1,7 +1,6 @@
-"""Documented Sign in with ChatGPT plan access for a participant-owned client.
+"""Local ChatGPT sign-in and plan access through OAuth and Responses.
 
-No platform API key, existing Codex credential, or ChatGPT backend endpoint is used.
-Credentials belong to this installation and never form part of a contribution.
+This installation obtains its own OAuth credentials and keeps them out of contributions.
 """
 
 from __future__ import annotations
@@ -45,7 +44,7 @@ TERMINAL_REFRESH_ERRORS = {
 
 
 class PlanError(ValueError):
-    """A safe diagnostic that never includes an OAuth URL, token, or response body."""
+    """A diagnostic that omits OAuth URLs, tokens, and response bodies."""
 
     def __init__(self, code, *, status=None, request_id=None, shape=None):
         self.code = code if re.fullmatch(r"[a-zA-Z0-9_.-]{1,120}", str(code)) else "request_failed"
@@ -407,7 +406,7 @@ class PlanClient:
         }
 
     async def respond(self, *, model, instructions, messages, seconds, web_search=False, http=None):
-        """One explicitly requested inference; no automatic retries or billing fallback."""
+        """Send one authorized inference request, with retries and billing fallback disabled."""
         if not model or not 1 <= seconds <= 900:
             raise ValueError("Choose a model and a request allowance between 1 and 900 seconds.")
         body = {

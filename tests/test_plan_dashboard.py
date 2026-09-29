@@ -1,4 +1,4 @@
-"""Loopback dashboard checks with synthetic provider and project data only."""
+"""Loopback dashboard tests using synthetic provider and project data."""
 
 import threading
 import time

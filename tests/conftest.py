@@ -1,5 +1,5 @@
 import os
 import tempfile
 
-# Tests own a separate local state directory and never modify demonstration data.
+# Keep test state in a temporary directory.
 os.environ["MARKET_DATA_DIR"] = tempfile.mkdtemp(prefix="research-market-tests-")

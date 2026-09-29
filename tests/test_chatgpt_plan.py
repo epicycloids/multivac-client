@@ -1,4 +1,4 @@
-"""Isolated OAuth/Responses fixtures; no real account access or inference."""
+"""OAuth and Responses tests using a synthetic provider."""
 
 import asyncio
 import base64
@@ -272,7 +272,7 @@ def completed_event():
                     "content": [
                         {
                             "type": "output_text",
-                            "text": "Synthetic protocol report. This is not scientific research.",
+                            "text": "Synthetic protocol test report.",
                         }
                     ],
                 }
@@ -435,7 +435,7 @@ def test_local_sign_in_listener_checks_host_state_and_redacts_logs(provider, cap
                 },
             )
             assert response.status_code == 200
-            assert "No research has started" in response.text
+            assert "review a task before starting research" in response.text
         assert future.result(timeout=3)["plan_use_authorized"]
     provider["plan"].http.close()
     output = capsys.readouterr()

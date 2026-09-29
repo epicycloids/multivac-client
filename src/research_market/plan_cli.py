@@ -1,4 +1,4 @@
-"""Local, explicit ChatGPT plan authorization and contribution commands."""
+"""Commands for local ChatGPT sign-in and research contributions."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from .remote_client import DEFAULT_ORIGIN, RemoteClient
 app = typer.Typer(
     no_args_is_help=True,
     pretty_exceptions_show_locals=False,
-    help="Preview: use a separately authorized ChatGPT plan in this local client.",
+    help="Preview: connect a ChatGPT plan and contribute through this local client.",
 )
 
 
@@ -46,13 +46,13 @@ def account(
 
 @app.command()
 def status(ctx: typer.Context):
-    """Read connection metadata. Does not contact a model or print credentials."""
+    """Read saved connection metadata. Credentials are omitted; no model is called."""
     typer.echo(json.dumps(ctx.obj["plan"].status(), indent=2))
 
 
 @app.command()
 def models(ctx: typer.Context):
-    """List models actually available to the selected ChatGPT registration."""
+    """List models available to the selected ChatGPT registration."""
     typer.echo(json.dumps(ctx.obj["plan"].models(), indent=2))
 
 
@@ -66,15 +66,15 @@ def page(message, *, start=False):
         "max-width:650px;margin:12vh auto;padding:24px}h1{font-size:36px;line-height:1.2}"
         "a{display:inline-block;padding:12px 20px;border-radius:8px;background:#202a35;"
         "color:white;text-decoration:none;margin-top:20px}small{display:block;margin-top:28px}</style>"
-        "<main><p>Multivac / Private connector preview</p><h1>Use your ChatGPT plan</h1>"
+        "<main><p>Multivac / Local connector preview</p><h1>Connect your ChatGPT plan</h1>"
         f"<p>{html.escape(message)}</p>{action}"
-        "<small>Signing in does not start research. Credentials stay in this local client. "
+        "<small>Review a task and choose when to start. Credentials stay in this local client. "
         "Review app access and limits in ChatGPT Settings → Usage.</small></main></html>"
     ).encode()
 
 
 def login_local(plan: PlanClient, *, enable_plan=False, open_browser=True, ready=None):
-    """Serve only on loopback; never print authorization or callback query strings."""
+    """Serve the loopback sign-in page with authorization and callback logging disabled."""
     outcome = {}
     pending = None
     expected_host = None
@@ -103,8 +103,8 @@ def login_local(plan: PlanClient, *, enable_plan=False, open_browser=True, ready
                 self.reply(
                     200,
                     "Connect an eligible ChatGPT account to this installation. "
-                    "You will choose its app permissions at OpenAI. This preview is for "
-                    "an eligible local or approved client; hosted-app approval is separate.",
+                    "Choose app permissions at OpenAI. Local sign-in and model requests "
+                    "have not been verified with a real account.",
                     start=True,
                 )
             elif parsed.path == "/authorize" and not parsed.query:
@@ -128,8 +128,8 @@ def login_local(plan: PlanClient, *, enable_plan=False, open_browser=True, ready
                     return
                 self.reply(
                     200,
-                    "Connected. No research has started. Return to Multivac to choose "
-                    "a project, model, and explicit contribution allowance."
+                    "Connected. Return to Multivac to choose a project, model, and time allowance, "
+                    "then review a task before starting research."
                     if outcome["result"]["plan_use_authorized"]
                     else "Signed in. ChatGPT plan use is disabled; no model requests will run.",
                 )
@@ -156,7 +156,7 @@ def login_local(plan: PlanClient, *, enable_plan=False, open_browser=True, ready
 
 @app.command("connect")
 def connect(ctx: typer.Context, enable_plan: bool = False, open_browser: bool = True):
-    """Open first-party consent. Run only for an eligible local or approved client."""
+    """Open OpenAI's consent page for an eligible local or approved client."""
     result = login_local(
         ctx.obj["plan"],
         enable_plan=enable_plan,
@@ -179,8 +179,8 @@ def run_report(
     """Use the selected plan for one reserved agent contribution and return its report.
 
     Sends the task and project-published context to OpenAI. This report profile
-    has no shell or local data access. It never changes account or billing path
-    automatically. A prior attempt cannot be rerun by repeating this command.
+    has no shell or local data access. The selected account and billing path stay
+    fixed. Repeating this command leaves any prior execution attempt unchanged.
     """
     result = asyncio.run(
         run_plan_report(
@@ -201,7 +201,7 @@ def collect(ctx: typer.Context, identifier: str, wait_seconds: int = 20):
 
 @app.command("dashboard")
 def dashboard(ctx: typer.Context, port: int = 0, open_browser: bool = True):
-    """Open this device's browser interface. Signing in starts no research."""
+    """Open the local browser interface to connect, review tasks, and contribute."""
     from .plan_dashboard import serve_dashboard
 
     serve_dashboard(ctx.obj["remote"], ctx.obj["plan"], port=port, open_browser=open_browser)

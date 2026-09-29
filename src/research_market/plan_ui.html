@@ -9,13 +9,13 @@
 <body>
 <header><a class="brand" href="/">multivac<span class="tube">▥</span></a><span class="pill">Local connector · Preview</span></header>
 <main>
-  <section class="intro"><p class="eyebrow">A little of your capacity. A question worth answering.</p>
-    <h1>Put your curiosity<br>to work.</h1><p class="lede">Choose an independent research project, set an allowance, and see what your contribution accomplished.</p>
-    <p class="disclosure">This preview uses your ChatGPT plan for a research report. It can analyze project context and optionally search the web. Your credentials stay on this device.</p>
+  <section class="intro"><p class="eyebrow">Multivac research contributions</p>
+    <h1>Contribute with<br>your ChatGPT plan.</h1><p class="lede">Choose a research project, review its task, and contribute a report.</p>
+    <p class="disclosure">Reports use the project’s shared context and optional web search. Your credentials stay on this device.</p>
   </section>
   <div id="message" role="status" aria-live="polite" hidden></div>
   <div class="grid">
-    <section class="card"><div class="step">01 <span>Connect</span></div><h2>Your accounts, your choice.</h2>
+    <section class="card"><div class="step">01 <span>Connect</span></div><h2>Connect your accounts</h2>
       <div class="connection"><h3>Multivac pilot</h3><p id="platform-status">Check your invitation or request a connection.</p>
         <div class="buttons"><button id="platform-connect">Connect to Multivac</button><button id="platform-check" class="secondary">Check approval</button></div>
         <p id="pairing-code" class="code" hidden></p>
@@ -24,9 +24,9 @@
         <div class="buttons"><button id="chatgpt-connect">Continue with ChatGPT</button><button id="chatgpt-disconnect" class="secondary" hidden>Disconnect</button></div>
         <a href="https://chatgpt.com/settings/usage" target="_blank" rel="noreferrer">Manage app access and limits ↗</a>
       </div>
-      <p class="small">Sign-in starts no research. This experimental integration still needs real-account verification. Hosted-service eligibility is separate from authorizing a local client.</p>
+      <p class="small">Local sign-in and model requests have not been verified with a real account.</p>
     </section>
-    <section class="card"><div class="step">02 <span>Choose</span></div><h2>What would you like to help?</h2>
+    <section class="card"><div class="step">02 <span>Choose</span></div><h2>Choose a project and model</h2>
       <button id="load-choices" class="secondary">Load my projects and models</button>
       <label for="project">Research project</label><select id="project"><option value="">Connect to the pilot to load projects</option></select>
       <p id="project-description" class="small"></p>
@@ -38,16 +38,16 @@
     </section>
   </div>
   <section class="card work"><div class="step">03 <span>Review & contribute</span></div>
-    <div class="work-heading"><h2 id="work-title">Your next contribution starts here.</h2><span id="work-state" class="pill">No task reserved</span></div>
+    <div class="work-heading"><h2 id="work-title">Review your task</h2><span id="work-state" class="pill">No task reserved</span></div>
     <p id="work-id" class="small">Getting a task does not use your ChatGPT plan.</p>
     <details id="task-details" hidden><summary>Read the project’s task and shared context</summary><pre id="task"></pre></details>
     <label id="confirmation" class="check" hidden><input id="confirmed" type="checkbox">I have reviewed this task and authorize sending it to OpenAI and using my selected ChatGPT plan within this allowance.</label>
     <div class="buttons"><button id="run" disabled>Start contribution</button><button id="cancel" class="secondary" disabled>Cancel contribution</button><button id="collect" class="secondary" disabled>Recover saved result & receipt</button></div>
-    <p class="small">Results go to the project you chose. A project may accept a report for further interpretation; that is different from verifying a scientific claim.</p>
+    <p class="small">Results go to the selected project. Check its receipt for the assessment; scientific claims may still need verification.</p>
     <div id="evidence" hidden><h3>Your contribution</h3><pre id="report"></pre><div id="receipt-status" class="receipt"></div><details><summary>Usage and project receipt</summary><pre id="receipt"></pre></details></div>
   </section>
-  <section class="card history"><div><h2>Pick up where you left off.</h2><p class="small">Open a previous contribution to inspect it or recover a saved result. Recovery does not call the model again.</p></div><button id="history-load" class="secondary">Load my contributions</button><div id="history"></div></section>
-  <footer>Multivac connects resources with questions. Research projects own their methods and the meaning of their results.<br><span id="platform-origin"></span></footer>
+  <section class="card history"><div><h2>Previous contributions</h2><p class="small">Open a contribution to inspect its report or retry delivery of a saved result without another model request.</p></div><button id="history-load" class="secondary">Load my contributions</button><div id="history"></div></section>
+  <footer>Research projects set their methods and acceptance rules.<br><span id="platform-origin"></span></footer>
 </main>
 </body>
 </html>

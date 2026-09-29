@@ -1,4 +1,4 @@
-"""Contributor-owned pilot connection, outbound MCP bridge, and bounded execution."""
+"""Multivac pilot connections, an outbound MCP bridge, and local CPU execution."""
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ def owner_key(create=False):
             },
         )
     else:
-        raise ValueError("Create the owner key first with market remote owner-key.")
+        raise ValueError("Create the owner key first with multivac-client owner-key.")
     return key
 
 
@@ -104,9 +104,8 @@ class RemoteClient:
         self.directory = root / fingerprint({"origin": self.origin})[:16]
         self.path = self.directory / (connection + ".json")
         self.config = json.loads(self.path.read_text()) if self.path.exists() else {}
-        # Reuse HTTPS connections. Retry only connection establishment failures,
-        # before a request can have reached the application; never replay an
-        # uncertain mutation automatically.
+        # Retry connection establishment failures only, while the request is
+        # known not to have reached the application.
         self.http = httpx.Client(transport=httpx.HTTPTransport(retries=2), follow_redirects=False)
 
     def save(self, value):
@@ -115,7 +114,7 @@ class RemoteClient:
 
     def headers(self):
         if not self.config.get("token"):
-            raise ValueError("Connect this device first with multivac remote connect.")
+            raise ValueError("Connect this device first with multivac-client connect.")
         return {**self.transport_headers, "Authorization": "Bearer " + self.config["token"]}
 
     def call(self, method: str, path: str, body=None, *, public=False, timeout=90):
@@ -218,7 +217,7 @@ class RemoteClient:
             raise ValueError("This task has no project-published context snapshot.")
         if bundle.get("project_id") != record["project_id"]:
             raise ValueError("The context snapshot belongs to a different project.")
-        # The fixed default path is derived from content, never an unchecked task path.
+        # Derive the default directory from the validated snapshot's content hash.
         from .context_bundle import validate_bundle
 
         validate_bundle(bundle)
@@ -323,7 +322,7 @@ class RemoteClient:
 async def bridge(
     client: RemoteClient, project: str, endpoint: str, endpoint_token: str | None = None
 ):
-    """Only this allowlisted MCP contribution surface is forwarded to the local project."""
+    """Forward the permitted MCP contribution tools to the local project."""
     from .mcp_client import call_endpoint
 
     parsed = urlparse(endpoint)

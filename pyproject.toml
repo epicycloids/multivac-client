@@ -1,7 +1,7 @@
 [project]
 name = "multivac-client"
 version = "0.4.0a1"
-description = "Connect donated resources and independent research projects, with a local ChatGPT plan connector preview."
+description = "Contributor client for independent research projects."
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 license = "Apache-2.0"

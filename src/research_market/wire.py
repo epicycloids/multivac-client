@@ -1,4 +1,4 @@
-"""Stable transport fingerprints without importing the hosted server."""
+"""Deterministic fingerprints for transport data."""
 
 import hashlib
 import json

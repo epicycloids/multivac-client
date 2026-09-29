@@ -1,4 +1,4 @@
-"""Portable client entry point. Connection state is independent of working directory."""
+"""Portable client entry point with a persistent connection directory."""
 
 import os
 from pathlib import Path

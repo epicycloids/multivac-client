@@ -4,11 +4,11 @@
   "files": [
     {
       "path": "src/research_market/__init__.py",
-      "sha256": "30cef4ad32e843fb1f3771aceed9fc4795f2a953b5bea191372ed632b3efe8fe"
+      "sha256": "91f9b372ebd4482fc322bd7fa9593c6ee0ee2f5fdda92c8e7337978d305b9ac9"
     },
     {
       "path": "src/research_market/client_entry.py",
-      "sha256": "b64a22d0d188543ff1f7e79591db8998a7a35d945bcf705f456fe1af3f7f035a"
+      "sha256": "4fb138c3b51515e9fc75862bcb82b7fddd72088cbd7db1da19ea9e28b09d4e89"
     },
     {
       "path": "src/research_market/config.py",
@@ -20,23 +20,23 @@
     },
     {
       "path": "src/research_market/wire.py",
-      "sha256": "864592fd33f8ef54bdf91631f943e554451b24295b8ba91b0cf86f24a352fe4f"
+      "sha256": "aba5f25d26381e5b99b3a9a5b22a8b1c315769117d83b62a29883744b9ddfdf6"
     },
     {
       "path": "src/research_market/contracts.py",
-      "sha256": "c88595af8878828f90a8210bb9df8c5b31a720f541d5740a41399fdb6a73ece0"
+      "sha256": "ab4053ef3fd89f36fb0a9366ba5de2d0af0016540737d17343ba2e173e4c4555"
     },
     {
       "path": "src/research_market/remote_cli.py",
-      "sha256": "ccf88e835981e35cfc511b694dc62bb0377adf4bbc9cc89dcb0078bb54f051eb"
+      "sha256": "fccda02a63ce3ab080207b26900c1048f35864d649a06b05308d13b1154d5300"
     },
     {
       "path": "src/research_market/remote_client.py",
-      "sha256": "bae9b8d50483ffd0392cd6a120f86f32317aa7a9fbf746b1145dcf0ccefd404c"
+      "sha256": "d260f338de8c24c171f6f94eda80a6e2c963c5995d4afe83c84d9021ebbe12db"
     },
     {
       "path": "src/research_market/context_bundle.py",
-      "sha256": "8b6a718076294405f0e88977c4a76ea52ce2a09e5da830fca0c5222da91feda9"
+      "sha256": "e92c2d03c91f61ad112164ea5a1a0e84df6aa3629fbcc50d0e7b00c549351973"
     },
     {
       "path": "src/research_market/mcp_client.py",
@@ -44,27 +44,27 @@
     },
     {
       "path": "src/research_market/project_starter.py",
-      "sha256": "7cabf52df659aa099c978d112f9758f2e9d8e8f78ab1f7956009c0473ccbf36a"
+      "sha256": "4eb7d8c8d512a9f42e67f72a9d99edc2e8bee66f43147f53bbca6faa6d31a6f2"
     },
     {
       "path": "src/research_market/chatgpt_plan.py",
-      "sha256": "7ac8db4ff2d42bd961b616870382a9cf275eb849ae510f4582f4ad30feb1e908"
+      "sha256": "176f0b0d1a7aa7f0192b28ab2cf95e961432906eed07b627a37f9b02274b2158"
     },
     {
       "path": "src/research_market/plan_cli.py",
-      "sha256": "6ca1b4443d7c8987d87bcf059fcbfc8e2d1df2201a3d8622d8871d49ce2aa0d6"
+      "sha256": "ea06641d0d29bfc3e3c4209816d4cf8dd038847bcd846717839744e0a16c81ec"
     },
     {
       "path": "src/research_market/plan_contribution.py",
-      "sha256": "01f7d8e9c74db3d8857a1a99e872e884af30425b11cfa6028aa8a2e1c2f4140d"
+      "sha256": "41fd442e6d6c7b626e8b5e083dfb2d39f47bd575823963c55af8df3239303da1"
     },
     {
       "path": "src/research_market/plan_dashboard.py",
-      "sha256": "acaf55e8179d463e75f38aa85bafa97bf9b06623f052d50ab310300dd48e31ec"
+      "sha256": "98527a42b583d73a76517bb1bc524e7c78d05e1fef800fb8afc1428dc2d0e44d"
     },
     {
       "path": "src/research_market/plan_ui.html",
-      "sha256": "5256a50260f3e01ab50f7be1ca291cc5a2c5f60c067cbfae49d1a97d8dc1cdfc"
+      "sha256": "aa56c02b3b5d5fd1fe8ec495c662d9511b3a382123e672c262a43c0a2cf64c2c"
     },
     {
       "path": "src/research_market/plan_ui.css",
@@ -72,51 +72,51 @@
     },
     {
       "path": "src/research_market/plan_ui.js",
-      "sha256": "b20f115e589266e87d7e7939f1ba98cd3555d3fe1b45a0fca3a7a747104be833"
+      "sha256": "c6070cf91557157124fd04d515e903a6ef16ae3dd1ed22a3e9c094615bd48b16"
     },
     {
       "path": "tests/conftest.py",
-      "sha256": "74fd6b9b4b9898a9703d1d8ed05611e26c1e695829c13c95420a1d0244d908fc"
+      "sha256": "6d0cc8f1dcf4aaf8be470cdfbae13a45dcd30cc81de636c26e01d0ca6327207e"
     },
     {
       "path": "tests/test_chatgpt_plan.py",
-      "sha256": "7b343bd23a86acc82c1146e525256004ce1e16ac62feed14bcf322d08d6fe719"
+      "sha256": "461dbc37fa482b4f3a0f6e9687521c3997c53f0826eb7d5799c935bbe2b2936f"
     },
     {
       "path": "tests/test_plan_contribution.py",
-      "sha256": "71d5084589aa3a78ccbf4a7a9d06c717033abd8609756187655bd1b724d0cbdb"
+      "sha256": "06e8cf3b9d1b82f2035ad1f8fabd35d011afc6579e84edcef750929424249cf2"
     },
     {
       "path": "tests/test_plan_dashboard.py",
-      "sha256": "0eee0110ec8b4edf6b59d5b7c27683a0e07a0e208ae9991f748ac366dfac2734"
+      "sha256": "089ef236bf29648657e8f5cf911bae8979be1601692facc4b69e578a85fecc6b"
     },
     {
       "path": "tests/test_project_starter.py",
-      "sha256": "3fd9219da355e35b6d1b4326d05315a929499cfed20d7fdf38ab87cb93b3fcc9"
+      "sha256": "4d9c5f8b44648920c1b7a6eddb125150dd0abaf5d166e1dc51afd67220bff7b1"
     },
     {
       "path": "README.md",
-      "sha256": "136c9bdcb7c8c0b93e4ed7146c0887849e83c4b6dc5b3ac78e2c429bdc9d5168"
+      "sha256": "31b117bfba4dbc8b477e5cbb47ec79d3801581e034e768364e6915dbf850971f"
     },
     {
       "path": "PROTOCOL.md",
-      "sha256": "b85b1fd443842bad7747f14ce74fc2feee3c2202d77e0edfca521bae73da0cd9"
+      "sha256": "8b21ce51e9aceff78e2eb505f22511643ea3e9906d33da62c908228240962b5f"
     },
     {
       "path": "PROJECTS.md",
-      "sha256": "de78179bac74fdd8f1dd325ba68245bd5a125e19ebe9394d2d92f1a136894d11"
+      "sha256": "d92deb18849d834f40d2b387b49d07682a309cc15ffa8d25490f744192b4bd37"
     },
     {
       "path": "PRIVACY.md",
-      "sha256": "b4c20a44b56fcf9663b83361dee8b5e6a36feba07f6bdd822adc9f61f0d68ee4"
+      "sha256": "c1b7ed458c146c0f5cf8770fe083e0df1eed176ead252341a58227edf0057356"
     },
     {
       "path": "ROADMAP.md",
-      "sha256": "3baad3614b39ffbbf8de4738a2ec24a62ea148df76ee32eca031f61ad22a0269"
+      "sha256": "1886fa844b05bfe1259df44af1a950ee040b5071ae516f1cc40e8f51eda1269a"
     },
     {
       "path": "CONTRIBUTING.md",
-      "sha256": "2ba013d2ee65e694663799393bf7809b020876f763f78a9ff4c769166858d231"
+      "sha256": "cf1fe05e5bc094e64ec57fde3d67a8f7dbcadceb8b18d32a683c5a86ad4f2bd6"
     },
     {
       "path": "LICENSE",
@@ -124,11 +124,11 @@
     },
     {
       "path": "NOTICE",
-      "sha256": "0babee1dde4ced78ca334c6de6112d54c9e694463b2869e4f2c36172005d011e"
+      "sha256": "6fd248c3fe7a6b543081caac8585a70484e94e646f6429ef022499bd30773574"
     },
     {
       "path": "pyproject.toml",
-      "sha256": "7a4c5cb62f10e8a023a99265219979e9e4bc8a6748aa2a91baf7e1d788d8a0ba"
+      "sha256": "8b3784da5fecfecfae5776624f34e9b87b2cc354b62266dfafd174f6d6b4e7bd"
     },
     {
       "path": "uv.lock",
@@ -140,12 +140,12 @@
     },
     {
       "path": "examples/protocol_check.py",
-      "sha256": "e2611c43a1d94aeacfb8b2a6de33255b132d18c92155da1fda949c8155f4fb6a"
+      "sha256": "8832d2c1ce050af02f6685a385c5adb7d922afd627db424cc63f16bc5ba0db8b"
     },
     {
       "path": ".github/workflows/check.yml",
       "sha256": "2ba9748494652b043351f77cf698817de1aa4d1b0be4048eb82f8cb1d1f551ff"
     }
   ],
-  "status": "release candidate; no live provider authorization verified"
+  "status": "experimental alpha"
 }

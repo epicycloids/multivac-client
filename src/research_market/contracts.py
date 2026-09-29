@@ -1,10 +1,10 @@
-"""The contributor rechecks project work against its own authority and limits."""
+"""Validate project tasks against the contributor's approved offer."""
 
 from .models import Offer
 
 
 def validate_task_envelope(task: dict, offer: Offer, project_id: str) -> dict:
-    """Check donor authority without prescribing a project's execution profile."""
+    """Check project, resource, and continuation limits in a task envelope."""
     if not isinstance(task, dict):
         raise ValueError("Project task must be a structured object.")
     if project_id not in offer.allowed_projects:

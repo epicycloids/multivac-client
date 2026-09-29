@@ -1,4 +1,4 @@
-"""Project-owned lifecycle checks. Fixtures never populate hosted research activity."""
+"""Project-owned task, contribution, and receipt lifecycle tests."""
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -14,7 +14,7 @@ def test_project_owns_capacity_idempotency_and_evidence(tmp_path):
         directory,
         "external-test",
         "Isolated test",
-        "Inspect a test protocol only. No scientific finding is requested.",
+        "Exercise the contribution protocol with synthetic test data.",
     )
     project = ProjectInbox(directory)
     offer = Offer(
@@ -38,9 +38,7 @@ def test_project_owns_capacity_idempotency_and_evidence(tmp_path):
         project.claim({**offer, "budget_seconds": 42}, "same-id")
     with pytest.raises(ValueError, match="Unknown project lease"):
         project.finish("same-id", "wrong", {"report": "Invalid lease fixture"}, {})
-    artifact = {
-        "report": "This is an isolated lifecycle test artifact, not a research contribution."
-    }
+    artifact = {"report": "Synthetic lifecycle test artifact."}
     receipt = project.finish("same-id", claims[0]["lease_token"], artifact, {"wall_seconds": 0})
     assert receipt["accepted"] and receipt["review_required"] and not receipt["new_research_claim"]
     assert (

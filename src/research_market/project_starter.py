@@ -1,4 +1,4 @@
-"""A small project-owned inbox. Researchers can replace its orchestration freely."""
+"""A starter inbox for a research project's tasks and contributed findings."""
 
 from __future__ import annotations
 
@@ -144,7 +144,7 @@ class ProjectInbox:
                 "objective": metadata["objective"],
                 "instruction": settings["brief"],
                 "research_context": {"interpretation": settings["interpretation"]},
-                "disclosure": "Return only findings you are permitted to share. Your own harness enforces your resource and access limits.",
+                "disclosure": "Return only findings you are permitted to share. Your harness enforces your resource and access limits.",
                 "operation": "project_investigation",
             }
             validate_task_envelope(task, approved, metadata["id"])
@@ -186,7 +186,7 @@ class ProjectInbox:
                     "accepted": True,
                     "review_required": True,
                     "new_research_claim": False,
-                    "accomplishment": "Received findings for project-owned interpretation.",
+                    "accomplishment": "Findings received for review by the project.",
                     "artifact": artifact,
                     "usage": usage,
                     "artifact_hash": fingerprint(artifact),
@@ -208,10 +208,10 @@ def scaffold(directory: Path, project: str, title: str, objective: str):
         tags=["research"],
         kinds=["agent", "human"],
         objective=project,
-        orchestration="Independent project-owned research inbox; replace or connect your own coordinator.",
+        orchestration="Research inbox with a replaceable project coordinator.",
         integration_label="Project starter over MCP",
         visibility="unlisted",
-        acceptance_scope="Findings received for interpretation, not automatic scientific verification.",
+        acceptance_scope="Reports are received for review. Scientific claims require separate verification.",
     )
     if len(objective) < 20:
         raise ValueError("Provide the actual research question in at least 20 characters.")
@@ -220,22 +220,25 @@ def scaffold(directory: Path, project: str, title: str, objective: str):
         json.dumps({"metadata": metadata.model_dump(), "brief": objective}, indent=2)
     )
     (directory / ".gitignore").write_text("*.sqlite3*\n.local-token\n")
-    (directory / "README.md").write_text("""# Your independent project
+    (directory / "README.md").write_text("""# Research project starter
 
-Edit project.json with your actual question, research approach, and acceptance scope.
+Edit project.json with your research question, approach, and acceptance rules.
 The starter is unlisted until you choose visibility=public and the pilot owner approves it.
-No model calls or research run merely by starting this endpoint.
+Starting this endpoint makes tasks available; it does not run research or call a model.
 
 Run `multivac-client serve-project .` and check `multivac-client check-project http://127.0.0.1:9000/mcp/`.
 Connect a project identity, get approval for this project ID, then run
 `multivac-client --connection my-project host PROJECT_ID --endpoint http://127.0.0.1:9000/mcp/`.
 
-Your own assistant can coordinate through `multivac-client project-mcp /absolute/path/to/this/directory`.
-It can read findings, interpret them, update the broad brief, and set capacity (zero pauses new claims).
-The platform never calls these project administration tools. Accepted reports are evidence for your
-interpretation, not certified discoveries. Customize ProjectInbox or replace it with your own MCP service
-when you need different orchestration, task generation, data access, execution, or acceptance.
-The SQLite database is yours; back it up and keep it private. Brief changes affect future tasks only.
+Connect your assistant through `multivac-client project-mcp /absolute/path/to/this/directory`
+to read and interpret findings, update the brief, and set capacity. A capacity of zero pauses
+new claims. These administration tools are available to the project owner; the platform
+cannot call them. Brief changes affect future tasks only.
+
+The starter accepts reports for review. You are responsible for interpreting their evidence
+and verifying scientific claims. Customize ProjectInbox or replace it with your MCP service
+to change orchestration, task generation, data access, execution, or acceptance rules.
+Back up the local SQLite database and keep it private.
 """)
     return {"directory": str(directory.resolve()), "project_id": project, "visibility": "unlisted"}
 
@@ -254,10 +257,10 @@ def server(directory: Path, *, coordinator=False):
 
         @mcp.tool()
         def coordinate_research(brief: str, capacity: int, interpretation: str) -> dict:
-            """Manage this project's research freely. Update future briefs, interpret findings, or pause new claims.
+            """Update the research brief, interpretation, and capacity for future claims.
 
-            This is project-owner authority, not a platform allocation tool. Use only within the owner's research scope.
-            Existing task snapshots and returned findings remain unchanged. This invokes no model or donor work itself.
+            Use this tool within the project owner's research scope. It leaves platform allocation,
+            existing tasks, and returned findings unchanged. It does not start model or contributor work.
             """
             return project.coordinate(brief, capacity, interpretation)
     else:

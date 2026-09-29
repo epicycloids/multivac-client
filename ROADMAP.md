@@ -1,23 +1,27 @@
-# Roadmap and observed state
+# Roadmap
 
-This release candidate includes a local contribution dashboard, a direct ChatGPT
-plan report connector, existing-assistant MCP tools, an independent-project starter,
-and durable local result recovery. Protocol tests use synthetic responses.
+## Published alpha
 
-Next: verify account/app eligibility and a genuine contribution, improve the
-onboarding from observed participant feedback, and help additional independent
-projects integrate. A broader hosted integration requires its own eligibility path.
-No real-account test is implied by a passing synthetic suite.
+The alpha includes a local contribution dashboard, a ChatGPT plan report connector,
+MCP tools for existing assistants, a starter for independent projects, and local
+recovery of saved results.
 
-The hosted pilot's first research endpoints pursue Trefethen's constant through
-different orchestration backends. Biology and Minecraft remain unopened project
-ideas until their integrations are ready. Projects can pursue a fixed question or
-provide a research tool that accepts questions from contributors.
+The hosted pilot's first research endpoints investigate Trefethen's constant using
+different orchestration backends. Projects can pursue a fixed question or provide
+a research tool that accepts questions from contributors.
 
-Possible later work includes participation recognition and an optional non-cash
-priority mechanism with baseline access for newcomers. No vactube balances, exchange
-rate, guaranteed capacity, cash market, or game are activated by this release.
-Provider permission, resource accounting, and research usefulness are separate questions.
+## Next
 
-The immediate goal is to make contributions work and their outcomes understandable.
-Claims about allocation value-add require a separately resourced evaluation.
+Test sign-in, model requests, and a full contribution with an eligible ChatGPT
+account. Use participant feedback to improve onboarding and help additional
+independent projects integrate.
+
+The proposed biology and Minecraft projects need integrations before opening to
+contributors. A hosted ChatGPT connector depends on provider approval.
+
+## Later
+
+Possible additions include participation recognition and an optional non-cash
+priority mechanism with baseline access for newcomers.
+
+Controlled comparisons of allocation policies would follow the functional pilot.

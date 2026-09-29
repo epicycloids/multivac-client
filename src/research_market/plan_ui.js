@@ -40,11 +40,11 @@ async function refresh() {
   const account = snapshot.account, platform = snapshot.platform;
   $('platform-origin').textContent = snapshot.origin;
   $('account-status').textContent = account.connected ?
-    `${account.email || account.account} · ${account.plan_use_authorized ? 'Plan use authorized' : 'Signed in; plan use disabled'}` : 'Not connected. No ChatGPT usage is authorized.';
+    `${account.email || account.account} · ${account.plan_use_authorized ? 'Plan use authorized' : 'Signed in; plan use disabled'}` : 'Connect ChatGPT to authorize plan use.';
   $('chatgpt-connect').textContent = account.connected ? 'Review ChatGPT permissions' : 'Continue with ChatGPT';
   $('chatgpt-disconnect').hidden = !account.connected;
   $('platform-status').textContent = platform.state === 'approved' ? 'Connected · invited pilot access' :
-    platform.code ? 'Give this pairing code to the pilot owner, then check approval.' : 'Connect this client, then check your invitation approval.';
+    platform.code ? 'Give this pairing code to the pilot owner, then check approval.' : 'Request a connection, then check for the pilot owner’s approval.';
   $('pairing-code').textContent = platform.code || ''; $('pairing-code').hidden = !platform.code;
   if (snapshot.contribution.id) current = {...current, ...snapshot.contribution};
   if (current) {
@@ -83,9 +83,9 @@ async function readWork(force) {
 async function showEvidence() {
   const data = await api('/api/evidence');
   $('evidence').hidden = !data.result && !data.attempt;
-  $('report').textContent = data.result?.artifact?.report || 'No completed report is saved. The attempt record preserves the interruption.';
+  $('report').textContent = data.result?.artifact?.report || 'No completed report is saved. See the attempt record for details.';
   $('receipt-status').textContent = data.receipt ?
-    `${data.receipt.accepted === true ? 'Accepted by the project.' : 'Project disposition received.'} ${data.receipt.accomplishment || ''}${data.receipt.review_required ? ' Further interpretation is required.' : ''}` : 'No project receipt yet. A saved report can be delivered again without repeating inference.';
+    `${data.receipt.accepted === true ? 'Accepted by the project.' : 'Project assessment received.'} ${data.receipt.accomplishment || ''}${data.receipt.review_required ? ' Further review is required.' : ''}` : 'No project receipt is saved. Retry delivery of a saved report with “Recover saved result & receipt”.';
   $('receipt').textContent = JSON.stringify({attempt:data.attempt, usage:data.result?.usage, receipt:data.receipt ?? null}, null, 2);
 }
 button('platform-connect', () => api('/api/platform/connect', {}));
@@ -105,7 +105,7 @@ button('load-choices', async () => {
     (identity?.role === 'admin' || permitted.includes(p.id)));
   options('project', projects.map(p => [p.id,p.title]), 'Choose a research project');
   options('model', catalog.models.map(m => [m.slug,m.display_name]), 'Choose a model');
-  if (!projects.length) message('No approved agent projects are currently available. Check your invitation and project scopes.');
+  if (!projects.length) message('No approved agent projects are available. Check which projects your invitation permits.');
 });
 button('reserve', async () => {
   current = await api('/api/reserve', {project:$('project').value, seconds:Number($('seconds').value)});

@@ -1,4 +1,4 @@
-"""Project-selected text resources, pinned at publication and never auto-executed."""
+"""Publish and save immutable snapshots of project-selected text resources."""
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def resource_path(value):
 
 
 def build_bundle(workspace, paths, *, project_id, source_revision, evidence_status):
-    """Only explicitly selected regular files are copied; no directory discovery."""
+    """Copy the selected regular files into a context snapshot."""
     if not 1 <= len(paths) <= MAX_FILES or len(set(paths)) != len(paths):
         raise ValueError(f"Select between 1 and {MAX_FILES} different context files.")
     if not isinstance(evidence_status, str) or not 20 <= len(evidence_status) <= 4000:
@@ -72,8 +72,8 @@ def build_bundle(workspace, paths, *, project_id, source_revision, evidence_stat
         except UnicodeDecodeError as error:
             raise ValueError("Context resources must be UTF-8 text.") from error
         sha = hashlib.sha256(data).hexdigest()
-        # Standard MCP EmbeddedResource shape. The resource is included in full;
-        # its URI identifies this immutable content, not a host-local download.
+        # Embed the full resource using the MCP EmbeddedResource shape.
+        # The URI identifies the content by its hash.
         resources.append(
             {
                 "type": "resource",
@@ -138,7 +138,7 @@ def bundle_manifest(bundle):
 
 
 def save_bundle(bundle, destination):
-    """Verify first, then save into a new directory. Retry never overwrites local work."""
+    """Verify and save a snapshot, preserving any existing local edits."""
     bundle = validate_bundle(bundle)
     manifest = bundle_manifest(bundle)
     destination = Path(destination).absolute()
