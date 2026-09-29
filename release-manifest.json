@@ -80,7 +80,7 @@
     },
     {
       "path": "tests/test_chatgpt_plan.py",
-      "sha256": "bcbfaefa7a40a63528623a4d3c68855734c34aafdd344287503e1585ffea7af4"
+      "sha256": "7b343bd23a86acc82c1146e525256004ce1e16ac62feed14bcf322d08d6fe719"
     },
     {
       "path": "tests/test_plan_contribution.py",

@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urlparse
 import httpx
 import jwt
 import pytest
+from click import unstyle
 from cryptography.hazmat.primitives.asymmetric import rsa
 from typer.testing import CliRunner
 
@@ -446,4 +447,5 @@ def test_portable_cli_can_inspect_without_account_or_inference(tmp_path):
     assert result.exit_code == 0, result.output
     assert json.loads(result.output)["connected"] is False
     result = CliRunner().invoke(app, ["run-report", "--help"])
-    assert result.exit_code == 0 and "--model" in result.output
+    assert result.exit_code == 0, result.output
+    assert "--model" in unstyle(result.output)
