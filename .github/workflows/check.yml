@@ -1,0 +1,19 @@
+name: Client checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install '.[dev]' build
+      - name: Test and build
+        run: |
+          .venv/bin/pytest
+          .venv/bin/ruff check src tests examples
+          .venv/bin/python examples/protocol_check.py
+          .venv/bin/python -m build

@@ -1,0 +1,151 @@
+{
+  "name": "multivac-client",
+  "version": "0.4.0a1",
+  "files": [
+    {
+      "path": "src/research_market/__init__.py",
+      "sha256": "30cef4ad32e843fb1f3771aceed9fc4795f2a953b5bea191372ed632b3efe8fe"
+    },
+    {
+      "path": "src/research_market/client_entry.py",
+      "sha256": "b64a22d0d188543ff1f7e79591db8998a7a35d945bcf705f456fe1af3f7f035a"
+    },
+    {
+      "path": "src/research_market/config.py",
+      "sha256": "88f37b29726d93b2d84c112164e16aaeadecd1eb381239dca0b65b82cda91a47"
+    },
+    {
+      "path": "src/research_market/models.py",
+      "sha256": "607aa9e14d2ef427a5c5a05a5a0daccf3c250a6adf9eae103b84819c60636c11"
+    },
+    {
+      "path": "src/research_market/wire.py",
+      "sha256": "864592fd33f8ef54bdf91631f943e554451b24295b8ba91b0cf86f24a352fe4f"
+    },
+    {
+      "path": "src/research_market/contracts.py",
+      "sha256": "c88595af8878828f90a8210bb9df8c5b31a720f541d5740a41399fdb6a73ece0"
+    },
+    {
+      "path": "src/research_market/remote_cli.py",
+      "sha256": "ccf88e835981e35cfc511b694dc62bb0377adf4bbc9cc89dcb0078bb54f051eb"
+    },
+    {
+      "path": "src/research_market/remote_client.py",
+      "sha256": "bae9b8d50483ffd0392cd6a120f86f32317aa7a9fbf746b1145dcf0ccefd404c"
+    },
+    {
+      "path": "src/research_market/context_bundle.py",
+      "sha256": "8b6a718076294405f0e88977c4a76ea52ce2a09e5da830fca0c5222da91feda9"
+    },
+    {
+      "path": "src/research_market/mcp_client.py",
+      "sha256": "17fadf89b4b5dcf8e287738243b863bdfb857b441866cf3d0567bd6334bb2c64"
+    },
+    {
+      "path": "src/research_market/project_starter.py",
+      "sha256": "7cabf52df659aa099c978d112f9758f2e9d8e8f78ab1f7956009c0473ccbf36a"
+    },
+    {
+      "path": "src/research_market/chatgpt_plan.py",
+      "sha256": "7ac8db4ff2d42bd961b616870382a9cf275eb849ae510f4582f4ad30feb1e908"
+    },
+    {
+      "path": "src/research_market/plan_cli.py",
+      "sha256": "6ca1b4443d7c8987d87bcf059fcbfc8e2d1df2201a3d8622d8871d49ce2aa0d6"
+    },
+    {
+      "path": "src/research_market/plan_contribution.py",
+      "sha256": "01f7d8e9c74db3d8857a1a99e872e884af30425b11cfa6028aa8a2e1c2f4140d"
+    },
+    {
+      "path": "src/research_market/plan_dashboard.py",
+      "sha256": "acaf55e8179d463e75f38aa85bafa97bf9b06623f052d50ab310300dd48e31ec"
+    },
+    {
+      "path": "src/research_market/plan_ui.html",
+      "sha256": "5256a50260f3e01ab50f7be1ca291cc5a2c5f60c067cbfae49d1a97d8dc1cdfc"
+    },
+    {
+      "path": "src/research_market/plan_ui.css",
+      "sha256": "5bf7efcb9c427cea611d88266e67c7df1e856ef4bdc603c482fbeb3923e4deaf"
+    },
+    {
+      "path": "src/research_market/plan_ui.js",
+      "sha256": "b20f115e589266e87d7e7939f1ba98cd3555d3fe1b45a0fca3a7a747104be833"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "74fd6b9b4b9898a9703d1d8ed05611e26c1e695829c13c95420a1d0244d908fc"
+    },
+    {
+      "path": "tests/test_chatgpt_plan.py",
+      "sha256": "bcbfaefa7a40a63528623a4d3c68855734c34aafdd344287503e1585ffea7af4"
+    },
+    {
+      "path": "tests/test_plan_contribution.py",
+      "sha256": "71d5084589aa3a78ccbf4a7a9d06c717033abd8609756187655bd1b724d0cbdb"
+    },
+    {
+      "path": "tests/test_plan_dashboard.py",
+      "sha256": "0eee0110ec8b4edf6b59d5b7c27683a0e07a0e208ae9991f748ac366dfac2734"
+    },
+    {
+      "path": "tests/test_project_starter.py",
+      "sha256": "3fd9219da355e35b6d1b4326d05315a929499cfed20d7fdf38ab87cb93b3fcc9"
+    },
+    {
+      "path": "README.md",
+      "sha256": "136c9bdcb7c8c0b93e4ed7146c0887849e83c4b6dc5b3ac78e2c429bdc9d5168"
+    },
+    {
+      "path": "PROTOCOL.md",
+      "sha256": "b85b1fd443842bad7747f14ce74fc2feee3c2202d77e0edfca521bae73da0cd9"
+    },
+    {
+      "path": "PROJECTS.md",
+      "sha256": "de78179bac74fdd8f1dd325ba68245bd5a125e19ebe9394d2d92f1a136894d11"
+    },
+    {
+      "path": "PRIVACY.md",
+      "sha256": "b4c20a44b56fcf9663b83361dee8b5e6a36feba07f6bdd822adc9f61f0d68ee4"
+    },
+    {
+      "path": "ROADMAP.md",
+      "sha256": "3baad3614b39ffbbf8de4738a2ec24a62ea148df76ee32eca031f61ad22a0269"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "2ba013d2ee65e694663799393bf7809b020876f763f78a9ff4c769166858d231"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "NOTICE",
+      "sha256": "0babee1dde4ced78ca334c6de6112d54c9e694463b2869e4f2c36172005d011e"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "7a4c5cb62f10e8a023a99265219979e9e4bc8a6748aa2a91baf7e1d788d8a0ba"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "c47af188bc0ed0ee4b00171adadd5b78afebe67a9f808c97baf5fbb561fda800"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "4c21bada4867628affbeb744d8b4a40362d72557ce09fea9799e4964fd6769f2"
+    },
+    {
+      "path": "examples/protocol_check.py",
+      "sha256": "e2611c43a1d94aeacfb8b2a6de33255b132d18c92155da1fda949c8155f4fb6a"
+    },
+    {
+      "path": ".github/workflows/check.yml",
+      "sha256": "2ba9748494652b043351f77cf698817de1aa4d1b0be4048eb82f8cb1d1f551ff"
+    }
+  ],
+  "status": "release candidate; no live provider authorization verified"
+}
