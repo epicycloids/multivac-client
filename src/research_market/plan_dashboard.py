@@ -289,6 +289,8 @@ def make_dashboard(remote, plan, *, port=0):
                 elif parsed.path in {"/plan_ui.css", "/plan_ui.js"} and not parsed.query:
                     mime = "text/css" if parsed.path.endswith("css") else "text/javascript"
                     self.reply(200, (root / parsed.path[1:]).read_bytes(), mime + "; charset=utf-8")
+                elif parsed.path == "/multivac-logo.svg" and not parsed.query:
+                    self.reply(200, (root / "multivac-logo.svg").read_bytes(), "image/svg+xml")
                 elif parsed.path == "/authorize" and not parsed.query:
                     with state.lock:
                         if not state.pending or state.pending.consumed:

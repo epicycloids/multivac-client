@@ -1,6 +1,6 @@
 {
   "name": "multivac-client",
-  "version": "0.4.0a2",
+  "version": "0.4.0a3",
   "files": [
     {
       "path": "src/research_market/__init__.py",
@@ -16,7 +16,7 @@
     },
     {
       "path": "src/research_market/models.py",
-      "sha256": "607aa9e14d2ef427a5c5a05a5a0daccf3c250a6adf9eae103b84819c60636c11"
+      "sha256": "0e3b43977ecad5ba12ecbe7ae54f9f87b1717ff7ca1ef5520f388b1a46b4182c"
     },
     {
       "path": "src/research_market/wire.py",
@@ -24,15 +24,19 @@
     },
     {
       "path": "src/research_market/contracts.py",
-      "sha256": "ab4053ef3fd89f36fb0a9366ba5de2d0af0016540737d17343ba2e173e4c4555"
+      "sha256": "3f75bba36807c3e53477244540e2ae829daa74335cc24f295ac6899796bfd3f7"
+    },
+    {
+      "path": "src/research_market/delivery_context.py",
+      "sha256": "1498711b49558215508b1fbcf66061d685531c2d8beb27db16076d83ee1204a9"
     },
     {
       "path": "src/research_market/remote_cli.py",
-      "sha256": "1b634d1b24dd1f32874c7a620a00fb02f9c02ec9630088876fc2d8e462bdb3d4"
+      "sha256": "844b10533288bd3b5408258626944c4480d30e592d3e9529875d2d8824e0fb88"
     },
     {
       "path": "src/research_market/remote_client.py",
-      "sha256": "6ef31bfafcc870750dfb8d4b88333feb0c60ac16fa176d20d2f223ba7e62e7f4"
+      "sha256": "9dc4f22f74ef08f6a17d4bd01b7488344e51d420ffe8a07fd81c2c1a8eec3f31"
     },
     {
       "path": "src/research_market/assistant_setup.py",
@@ -44,11 +48,11 @@
     },
     {
       "path": "src/research_market/mcp_client.py",
-      "sha256": "17fadf89b4b5dcf8e287738243b863bdfb857b441866cf3d0567bd6334bb2c64"
+      "sha256": "5c581022f62f88464ca63471e5be4d243ca1a0811894b2910e098c8beb379ff2"
     },
     {
       "path": "src/research_market/project_starter.py",
-      "sha256": "4eb7d8c8d512a9f42e67f72a9d99edc2e8bee66f43147f53bbca6faa6d31a6f2"
+      "sha256": "69f516939c134c7a1e278b73bb26da1289feac5509d45da39652cd8a0f21b808"
     },
     {
       "path": "src/research_market/chatgpt_plan.py",
@@ -64,19 +68,23 @@
     },
     {
       "path": "src/research_market/plan_dashboard.py",
-      "sha256": "094bd78ebc31aa47f7a1e6616b388722eb42e49d93ed1bf99725c18116ab894a"
+      "sha256": "24b8182d606660905e3a70dcb058eac40e6cedf624d5a6c71c339490d70bddc0"
     },
     {
       "path": "src/research_market/plan_ui.html",
-      "sha256": "110bbc762d9f3830580afc60a937d9b7894bf32b0447a07dddc907bc4b4c56d3"
+      "sha256": "662c7da8e48f8ea589d6f09d943f954ee2789370f21df869fe95c5c6107d7d3c"
     },
     {
       "path": "src/research_market/plan_ui.css",
-      "sha256": "96c31320580e0825e770c10e8a1edc37adb6a77764cca8f6636980ca871afb22"
+      "sha256": "3e1fef36c509adf7b7fcab2d91020e285e28fef2d02b0a0b65b2283d8e51eefb"
     },
     {
       "path": "src/research_market/plan_ui.js",
       "sha256": "c84181313dc1d7f664ec51d933a956319fa023c78bc5ca4de4dfbdb9f0861ee5"
+    },
+    {
+      "path": "src/research_market/multivac-logo.svg",
+      "sha256": "a0b81ea33945a7b8a38b6a7d1f9331e07933244ec71054fa329cafa105686962"
     },
     {
       "path": "tests/conftest.py",
@@ -96,23 +104,27 @@
     },
     {
       "path": "tests/test_project_starter.py",
-      "sha256": "4d9c5f8b44648920c1b7a6eddb125150dd0abaf5d166e1dc51afd67220bff7b1"
+      "sha256": "28538fc3811d4ae686ff64d7a2ca512e941c0776815ee653dfa951f4ae47b0a3"
     },
     {
       "path": "tests/test_assistant_setup.py",
-      "sha256": "dc0e41524b5d2b2cff9bad904edb9b0dffc882a4d825621496f111fd9002c96e"
+      "sha256": "229d724e8d17faa296ab60ea9b5aadb73b133acea26def76c20278553f5e1ab1"
+    },
+    {
+      "path": "tests/test_client_consent.py",
+      "sha256": "d9e41b7919c1242357c1d064a41053369d9b138bdcd9a752237ebda0b349d955"
     },
     {
       "path": "README.md",
-      "sha256": "89aafdd0202d1f3d0e86d9d2d5b4611f331191092ef8b1be29e7da2ac0cb7a6d"
+      "sha256": "6836c462ccf649ad607ad3a03d1ae970588ee8efb23297835060e2db14e6f51e"
     },
     {
       "path": "PROTOCOL.md",
-      "sha256": "30e74c630a0db5fd4c8e16b37d0b7d2178c73a377e13d9cdd67e729148883176"
+      "sha256": "c0ada59319080ec8dbae62670c66bfef21b78de19c35d29ad481ad655618692c"
     },
     {
       "path": "PROJECTS.md",
-      "sha256": "d92deb18849d834f40d2b387b49d07682a309cc15ffa8d25490f744192b4bd37"
+      "sha256": "aaf31f0041d802d68ad6710b3fda6a0975ad87c606c0e536ad9312ac0c43db7b"
     },
     {
       "path": "PRIVACY.md",
@@ -128,7 +140,11 @@
     },
     {
       "path": "ASSISTANTS.md",
-      "sha256": "adaf8a1406c4f537b9ae7b71f53600f8309815b3f2b1fc9edd3f730d23c11826"
+      "sha256": "fa40e6f9761c8c9a500292f3b3672b56e0984a5567302e2edfb8c4f03ebe3d72"
+    },
+    {
+      "path": "RELEASE.md",
+      "sha256": "d6bb96fa6e11bc25bff1f9d28cf9ce5f1448e69335ce36cdeec359f209e774ba"
     },
     {
       "path": "LICENSE",
@@ -140,11 +156,11 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "5560e74da8ee103337759ab0dbfe01ee9712307af8885589f811418864ad5c23"
+      "sha256": "9cae94dab6136ddd84820b53b5bb500185a3e5c5b17c8befe51144358ddc9cac"
     },
     {
       "path": "uv.lock",
-      "sha256": "5a68a0d2ef8d68254e82c2018885e4594b6dc4cbb79ec7a0d7b61b30784f8820"
+      "sha256": "99e0a9fa50409fdc0acaa3e4499afdbc0108b4ee239cc7e423c73c5b618d0b18"
     },
     {
       "path": ".gitignore",
@@ -159,5 +175,5 @@
       "sha256": "2ba9748494652b043351f77cf698817de1aa4d1b0be4048eb82f8cb1d1f551ff"
     }
   ],
-  "status": "experimental alpha"
+  "status": "public release candidate"
 }

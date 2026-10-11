@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Multivac</title>
+  <desc id="description">A square IBM 7330-inspired tape-machine cabinet with a warm metal frame, dark glass, vintage controls, a smaller opaque reel at left and a larger clear-looking reel at right, a continuous gray panel beneath the reels, and a teal service panel carrying the Multivac name. No tape is visible.</desc>
+  <!-- Cabinet and inset metal bezel. -->
+  <rect x="8" y="8" width="496" height="496" rx="10" fill="#B4B6A5" stroke="#303A36" stroke-width="4" />
+  <path d="M18 488V18h476" fill="none" stroke="#DEDFCC" stroke-width="8" stroke-linejoin="round" />
+  <path d="M494 24v470H24" fill="none" stroke="#858D80" stroke-width="8" stroke-linejoin="round" />
+  <rect x="28" y="28" width="456" height="456" rx="3" fill="#444F50" stroke="#737D6E" stroke-width="4" />
+  <!-- The narrow two-row control bank echoes the reference machine. -->
+  <rect x="34" y="34" width="444" height="62" fill="#C6C6AD" />
+  <rect x="42" y="42" width="428" height="46" fill="#242D30" />
+  <circle cx="84" cy="65" r="15" fill="#68726D" />
+  <path d="M77 72 91 58" stroke="#CDD0B8" stroke-width="4" stroke-linecap="round" />
+  <g>
+    <rect x="132" y="49" width="42" height="13" rx="1" fill="#CAB67C" />
+    <rect x="184" y="49" width="42" height="13" rx="1" fill="#A99B79" />
+    <rect x="236" y="49" width="42" height="13" rx="1" fill="#925E51" />
+    <rect x="288" y="49" width="42" height="13" rx="1" fill="#788778" />
+    <rect x="340" y="49" width="42" height="13" rx="1" fill="#A49370" />
+    <rect x="132" y="69" width="42" height="12" rx="1" fill="#D3D3BA" />
+    <rect x="184" y="69" width="42" height="12" rx="1" fill="#D3D3BA" />
+    <circle cx="257" cy="75" r="6" fill="#E8E9D8" />
+    <rect x="288" y="69" width="42" height="12" rx="1" fill="#D3D3BA" />
+    <rect x="340" y="69" width="42" height="12" rx="1" fill="#D3D3BA" />
+  </g>
+  <!-- Smoked glass makes the two different reel constructions stand out. -->
+  <rect x="40" y="104" width="432" height="284" fill="#424E52" />
+  <path d="M40 104h432v284" fill="none" stroke="#293538" stroke-width="5" />
+  <g transform="translate(142 242)">
+    <circle r="80" fill="#C6C8BB" stroke="#959D91" stroke-width="3" />
+    <circle r="76" fill="none" stroke="#DBDDCE" stroke-width="2" />
+    <circle r="41" fill="#9FA89E" stroke="#737F76" stroke-width="5" />
+    <circle r="33" fill="#D3D7C7" />
+    <rect x="-20" y="-20" width="40" height="40" rx="3" transform="rotate(27)" fill="#DDDFCD" stroke="#798579" stroke-width="3" />
+  </g>
+  <g transform="translate(350 218)">
+    <circle r="101" fill="#A7B4B6" fill-opacity="0.38" stroke="#94A3A6" stroke-width="4" />
+    <circle r="92" fill="none" stroke="#B8C2C2" stroke-opacity="0.6" stroke-width="9" />
+    <circle r="79" fill="none" stroke="#819094" stroke-width="7" />
+    <circle r="69" fill="none" stroke="#B7C3C3" stroke-width="3" />
+    <g stroke="#B1BFBE" stroke-width="6" stroke-opacity="0.65">
+      <path d="M0 -94v24" />
+      <path d="M0 -94v24" transform="rotate(120)" />
+      <path d="M0 -94v24" transform="rotate(240)" />
+    </g>
+    <circle r="49" fill="#708083" stroke="#C8D0C7" stroke-width="5" />
+    <circle r="40" fill="#DADACE" stroke="#8A9795" stroke-width="3" />
+    <circle r="27" fill="#424E52" />
+  </g>
+  <!-- Continuous inset panel below the reels. -->
+  <g fill="#9AA596" stroke="#C7C9B1" stroke-width="4">
+    <rect x="54" y="337" width="402" height="46" rx="2" />
+  </g>
+  <!-- A single blue-teal cabinet panel replaces the former bottom tiles. -->
+  <rect x="40" y="393" width="432" height="87" rx="2" fill="#287887" stroke="#1D5560" stroke-width="3" />
+  <path d="M43 396h426" stroke="#4A919A" stroke-width="3" />
+  <rect x="56" y="425" width="140" height="32" rx="1" fill="#263436" />
+  <!-- Uniform 10-by-14 vector glyphs, 16-unit advance, and 8-unit padding around the visible strokes. -->
+  <g transform="translate(65 434)" fill="none" stroke="#E8E8D7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 14V0l5 7 5-7v14" />
+    <path d="M0 0v9q0 5 5 5t5-5V0" transform="translate(16)" />
+    <path d="M0 0v14h10" transform="translate(32)" />
+    <path d="M0 0h10m-5 0v14" transform="translate(48)" />
+    <path d="M0 0h10m-5 0v14m-5 0h10" transform="translate(64)" />
+    <path d="M0 0l5 14 5-14" transform="translate(80)" />
+    <path d="M0 14 5 0 10 14M2 9h6" transform="translate(96)" />
+    <path d="M10 0H5Q0 0 0 5v4q0 5 5 5h5" transform="translate(112)" />
+  </g>
+</svg>

@@ -19,6 +19,7 @@ import httpx
 import jwt
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from pydantic import TypeAdapter
 
 from .config import DATA
 from .models import Offer
@@ -39,9 +40,17 @@ def private_json(path: Path, value: dict):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
     fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "w") as stream:
-        json.dump(value, stream, indent=2, allow_nan=False)
-    temporary.replace(path)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            json.dump(value, stream, indent=2, allow_nan=False)
+        temporary.replace(path)
+    finally:
+        # A quota/serialization failure must not accumulate partial private
+        # files or replace the previous complete record.
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 def owner_key(create=False):
@@ -67,6 +76,27 @@ def owner_key(create=False):
     else:
         raise ValueError("Create the owner key first with multivac-client owner-key.")
     return key
+
+
+class PlatformResponseError(ValueError):
+    """An HTTP response with structured status, compatible with existing ValueError callers."""
+
+    def __init__(self, status_code, detail):
+        self.status_code, self.detail = status_code, detail
+        super().__init__(f"Platform response {status_code}: {detail}")
+
+    @property
+    def retryable(self):
+        """Gateway unavailability, not permission loss or an invalid request.
+
+        Callers must recover their existing request/result identity. This does
+        not authorize reissuing arbitrary operations or repeating execution.
+        """
+        return self.status_code in {502, 503, 504}
+
+
+class OfferRequestConflict(ValueError):
+    """An existing saved request cannot be replaced by a different agreement."""
 
 
 class RemoteClient:
@@ -140,7 +170,7 @@ class RemoteClient:
                 detail = response.json().get("detail", "Request failed.")
             except ValueError:
                 detail = "The hosted service is temporarily unavailable."
-            raise ValueError(f"Platform response {response.status_code}: {detail}")
+            raise PlatformResponseError(response.status_code, detail)
         return response.json()
 
     def login_owner(self):
@@ -195,6 +225,11 @@ class RemoteClient:
             self.save({"token": result["token"], "identity": result["identity"]})
         return {k: v for k, v in result.items() if k != "token"}
 
+    def offer_request_path(self, request_id):
+        identity = (self.config.get("identity") or {}).get("id")
+        scope = {"identity": identity} if identity else {"connection": self.path.stem}
+        return self.directory / "requests" / (fingerprint({**scope, "request": request_id}) + ".json")
+
     def grant(self, offer: Offer, *, agent=False, request_id=None):
         import re
 
@@ -208,10 +243,94 @@ class RemoteClient:
             "offer": offer.model_dump(),
             "capabilities": {"agent": agent, "gpu": False},
         }
-        # Save before transmission, so even an uncertain response can be retried
-        # without allocating a second project task.
-        private_json(self.directory / "requests" / (identifier + ".json"), request)
+        # Match the gateway's identity/request namespace. Keep legacy unscoped
+        # files intact: their owning connection cannot be established safely.
+        path = self.offer_request_path(identifier)
+        path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        identity = (self.config.get("identity") or {}).get("id")
+
+        def signature(value):
+            approved = Offer.model_validate(value["offer"])
+            if identity:
+                approved = approved.model_copy(update={"contributor": identity})
+            return fingerprint({"request_id": value["request_id"],
+                                "offer": approved.model_dump(),
+                                "capabilities": TypeAdapter(dict[str, bool]).validate_python(value["capabilities"])})
+
+        lock_fd = os.open(path.with_name(path.name + ".lock"), os.O_CREAT | os.O_WRONLY, 0o600)
+        with os.fdopen(lock_fd, "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if path.exists():
+                try:
+                    previous = json.loads(path.read_text())
+                    if not isinstance(previous, dict) or set(previous) != set(request):
+                        raise ValueError("Invalid saved offer request format.")
+                    previous_signature = signature(previous)
+                except (OSError, ValueError, KeyError, TypeError) as error:
+                    raise OfferRequestConflict(
+                        "The saved offer request cannot be read. Inspect the local client state before retrying."
+                    ) from error
+                if previous_signature != signature(request):
+                    raise OfferRequestConflict(
+                        "Use a new request ID when changing an offer or capabilities. The original saved request is retained."
+                    )
+                request = previous
+            else:
+                legacy = self.directory / "requests" / (identifier + ".json")
+                if legacy.exists():
+                    try:
+                        previous = json.loads(legacy.read_text())
+                        matches = isinstance(previous, dict) and set(previous) == set(request)
+                        matches = matches and signature(previous) == signature(request)
+                    except (OSError, ValueError, KeyError, TypeError) as error:
+                        raise OfferRequestConflict(
+                            "The legacy saved offer request cannot be read. Inspect the local client state before retrying."
+                        ) from error
+                    if not matches:
+                        raise OfferRequestConflict(
+                            "This legacy request label has different saved parameters and unknown connection ownership. "
+                            "The original file is retained; inspect your contributions before retrying."
+                        )
+                    # Do not assign ownership or send another connection's cache.
+                    # The caller supplied equivalent parameters; cache their own
+                    # request and let the scoped gateway key recover any grant.
+                # Save before transmission; identical retries reuse these exact
+                # parameters without rewriting the original agreement.
+                private_json(path, request)
         return self.call("POST", "/contributions", request)
+
+    def local_capabilities(self):
+        """Read installed support; neither hardware nor installation supplies consent."""
+        try:
+            from .trefethen import TrefethenExecutionUnavailable, require_environment
+        except ImportError:
+            cpu_runner, cpu_ready = False, False
+            action = "Use the separate full Multivac runner for reviewed CPU execution."
+        else:
+            cpu_runner = True
+            try:
+                require_environment()
+            except TrefethenExecutionUnavailable as error:
+                cpu_ready, action = False, str(error)
+            else:
+                cpu_ready = True
+                action = "Inspect the assignment; run-cpu rechecks its pinned source and resource limits."
+        return {
+            "assistant": {"execution": "caller_managed", "readiness": "not_probed"},
+            "cpu": {
+                "runner_installed": cpu_runner,
+                "environment_ready": cpu_ready,
+                "execution_preflight_required": True,
+                "action_needed": action,
+            },
+            "gpu": {"executor_ready": False, "reason": "This client provides no reviewed GPU executor."},
+            "consent": {
+                "execution_profiles": "Explicit per-offer profile names.",
+                "asset_labels": "Explicit per-offer registration labels; local paths are not sent.",
+                "installed_access_is_authorized": False,
+            },
+            "work_started": False,
+        }
 
     def contribution(self, identifier, *, timeout=90, summary=False):
         directory = assistant_result_directory(self, identifier)
@@ -245,12 +364,32 @@ class RemoteClient:
         return record
 
     def collect_result(self, identifier):
-        """Retry the saved result without invoking an assistant or repeating research."""
+        """Retry retained output without invoking a harness or repeating execution."""
         path = assistant_result_directory(self, identifier) / "result.json"
         if not path.is_file():
-            raise ValueError("No assistant result is saved for this contribution.")
+            path = self.directory / "work" / identifier / "output.json"
+        if not path.is_file():
+            raise ValueError("No saved result is available for this contribution.")
         result = json.loads(path.read_text())
         return self.submit_result(identifier, result["artifact"], result["usage"])
+
+    def project_request(self, project, action, arguments, request_id, contribution_id=None):
+        import re
+
+        if not re.fullmatch(r"[a-z][a-z0-9_-]{1,39}", project):
+            raise ValueError("Invalid project identifier.")
+        return self.call("POST", f"/projects/{project}/requests", {
+            "request_id": request_id, "action": action, "arguments": arguments,
+            "contribution_id": contribution_id,
+        })
+
+    def project_response(self, project, request_id):
+        import re
+
+        if (not re.fullmatch(r"[a-z][a-z0-9_-]{1,39}", project)
+                or not re.fullmatch(r"[a-f0-9]{64}", request_id)):
+            raise ValueError("Invalid project response identifier.")
+        return self.call("GET", f"/projects/{project}/requests/{request_id}")
 
     def save_context(self, identifier, destination=None):
         from .context_bundle import save_bundle
@@ -289,13 +428,17 @@ class RemoteClient:
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         output, attempted = directory / "output.json", directory / "attempt.json"
         if output.exists():
-            return self.call(
-                "POST", f"/contributions/{identifier}/result", json.loads(output.read_text())
-            )
+            return self.collect_result(identifier)
         if attempted.exists():
             raise ValueError(
                 "This task has an earlier execution attempt without a saved result. It will not be run again automatically; cancel it or inspect its private workspace."
             )
+        from .trefethen import TrefethenExecutionUnavailable, require_environment
+
+        try:
+            require_environment()
+        except TrefethenExecutionUnavailable as error:
+            raise ValueError(str(error)) from None
         record = self.call("POST", f"/contributions/{identifier}/start")
         remaining = int(record["deadline"] - time.time())
         if remaining < 1:
@@ -358,9 +501,7 @@ class RemoteClient:
             raise ValueError(
                 "Execution did not save a result. The private execution log contains details; retrying will not repeat the work."
             )
-        return self.call(
-            "POST", f"/contributions/{identifier}/result", json.loads(output.read_text())
-        )
+        return self.collect_result(identifier)
 
 
 async def bridge(
@@ -380,7 +521,7 @@ async def bridge(
     ):
         raise ValueError("The pilot bridge connects to an explicit local MCP endpoint.")
     headers = {"Authorization": "Bearer " + endpoint_token} if endpoint_token else {}
-    allowed = {"claim_work", "submit_result", "release_work"}
+    allowed = {"claim_work", "submit_result", "release_work", "project_call"}
     async with httpx.AsyncClient(
         base_url=client.api_origin + "/api/pilot/",
         headers=client.headers(),

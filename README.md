@@ -15,6 +15,12 @@ have been exercised with synthetic provider responses. OAuth and inference with 
 real ChatGPT account remain unverified. The invited pilot supports contributions
 through the MCP bridge.
 
+This source prepares the **unpublished `0.4.0a3` release candidate**. The hosted
+download remains `0.4.0a2` until a separate release decision. See
+[version, upgrade and project-host compatibility](RELEASE.md) before installing or
+upgrading a candidate. Updating the hosted site does not update a local client or
+project endpoint.
+
 ## Run from source
 
 Linux with Python 3.12–3.14 is the supported environment for this preview. Install

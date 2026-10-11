@@ -8,6 +8,43 @@ Kind = Literal["cpu", "gpu", "agent", "data", "human"]
 Policy = Literal["manual", "weighted", "performance", "managed"]
 
 
+class AgentChoice(BaseModel):
+    """Project-facing names, not necessarily provider API model identifiers."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    model: str = Field(min_length=1, max_length=100)
+    harness: str = Field(min_length=1, max_length=80)
+
+
+class AgentRuntime(AgentChoice):
+    harness_version: str | None = Field(default=None, max_length=100)
+    provider_model_id: str | None = Field(default=None, max_length=150)
+    reasoning_effort: str | None = Field(default=None, max_length=40)
+
+
+class AgentProfile(AgentRuntime):
+    """A donor declaration; this is not a provider attestation."""
+
+    delegates: list[AgentRuntime] = Field(default_factory=list, max_length=16)
+    evidence: Literal["self_reported"] = "self_reported"
+
+
+class AgentPolicy(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    allowed: list[AgentChoice] = Field(min_length=1, max_length=30)
+
+    def require(self, profile: AgentProfile | None):
+        if profile is None:
+            raise ValueError("This project requires an AI model and harness declaration.")
+        allowed = {(choice.model, choice.harness) for choice in self.allowed}
+        for runtime in [profile, *profile.delegates]:
+            if (runtime.model, runtime.harness) not in allowed:
+                raise ValueError(
+                    f"This project does not allow {runtime.model} through {runtime.harness}, "
+                    "including delegated project work."
+                )
+
+
 class Offer(BaseModel):
     model_config = ConfigDict(extra="forbid")
     project_id: str = "trefethen-arena"
@@ -27,7 +64,12 @@ class Offer(BaseModel):
     )
     allow_network: bool = False
     max_harness_invocations: Literal[1] = 1
+    execution_profiles: list[str] = Field(
+        default_factory=list, max_length=20, exclude_if=lambda v: not v
+    )
+    asset_labels: list[str] = Field(default_factory=list, max_length=20, exclude_if=lambda v: not v)
     resume_from: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,100}$")
+    agent_profile: AgentProfile | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @field_validator("weights")
     @classmethod
@@ -90,6 +132,11 @@ class ProjectMetadata(BaseModel):
     pilot: bool = False
     visibility: Literal["public", "unlisted"] = "public"
     acceptance_metric: str | None = Field(default=None, max_length=200)
+    interaction_protocol: Literal["multivac-project-calls-v1"] | None = None
+    result_delivery_contract: Literal["multivac-retained-result-v1"] | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
+    agent_policy: AgentPolicy | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @field_validator("source_url")
     @classmethod

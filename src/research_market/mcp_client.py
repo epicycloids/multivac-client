@@ -13,14 +13,15 @@ async def call_endpoint(endpoint, tool, arguments=None, headers=None):
             async with ClientSession(*streams) as session:
                 await session.initialize()
                 result = await session.call_tool(tool, arguments or {})
-                if result.is_error:
-                    raise ValueError(
-                        "; ".join(c.text for c in result.content if hasattr(c, "text"))
-                    )
-                content = result.structured_content
-                if content is not None:
-                    return content.get("result", content) if isinstance(content, dict) else content
-                for item in result.content:
-                    if hasattr(item, "text"):
-                        return json.loads(item.text)
-                raise ValueError("Project returned no structured result.")
+    # Interpret application errors after transport cleanup. Raising inside the
+    # MCP task groups wraps a routine rejection in an ExceptionGroup, which the
+    # outbound bridge treats as a reconnectable transport failure.
+    if result.is_error:
+        raise ValueError("; ".join(c.text for c in result.content if hasattr(c, "text")))
+    content = result.structured_content
+    if content is not None:
+        return content.get("result", content) if isinstance(content, dict) else content
+    for item in result.content:
+        if hasattr(item, "text"):
+            return json.loads(item.text)
+    raise ValueError("Project returned no structured result.")

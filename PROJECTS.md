@@ -37,6 +37,35 @@ active-participant limit through project-owner tools. These tools manage project
 state; contributors authorize their own model calls separately. Setting capacity
 to zero pauses new claims while preserving existing tasks and evidence.
 
+## Delayed result delivery and installed versions
+
+The published `0.4.0a2` starter's first-result window ends at claim time plus the
+offered allowance and 30 minutes. An identical receipt already stored by the
+project can still be recovered later. A long-disconnected host can miss that first
+delivery window even while the gateway retains the contributor's saved report.
+
+The unpublished `0.4.0a3` release candidate supports the optional
+`metadata.result_delivery_contract = "multivac-retained-result-v1"` project setting.
+New candidate starters opt in; existing project operators must upgrade their local
+endpoint and explicitly add that setting to `project.json` after a qualified
+upgrade. Retain the project directory and SQLite database. This candidate has not
+been publicly released. Updating the hosted site alone cannot update another
+machine's installed starter. Public `0.4.0a2` donor clients can still send ordinary
+reports through the existing interface to an upgraded project. The gateway and
+owner's project bridge must also support this contract; see the [compatibility
+matrix and upgrade path](RELEASE.md).
+
+The scoped project bridge carries gateway-owned original receipt evidence bound
+to the exact task, contributor, lease, artifact and usage. The starter checks that
+the gateway first retained the report within the original execution deadline and
+that the original assignment remains unchanged and unreleased. It can then finalize
+delivery automatically after reservation expiry, without additional execution or a
+new human approval step. Missing/late/conflicting context, release, cancellation or
+reassignment cannot revive the claim. The owner reads the same retained finding
+through `project-mcp`; acceptance remains receipt for scientific review. Keep the
+local contribution endpoint under the project owner's bridge authority, rather
+than accepting claimed receipt timestamps from untrusted callers.
+
 ## Join the hosted pilot
 
 ```sh
