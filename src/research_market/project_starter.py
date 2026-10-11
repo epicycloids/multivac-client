@@ -10,6 +10,8 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .contracts import validate_task_envelope
+from .delivery_context import CONTRACT as RESULT_DELIVERY_CONTRACT
+from .delivery_context import validate_context
 from .models import Offer, ProjectMetadata
 from .wire import fingerprint
 
@@ -158,7 +160,7 @@ class ProjectInbox:
             db.execute("INSERT INTO work VALUES (?,?)", (contribution_id, json.dumps(work)))
             return {k: work[k] for k in ("task", "lease_token", "expires_at")}
 
-    def finish(self, contribution_id, lease_token, artifact=None, usage=None):
+    def finish(self, contribution_id, lease_token, artifact=None, usage=None, delivery_context=None):
         with self.db() as db:
             row = db.execute("SELECT body FROM work WHERE id=?", (contribution_id,)).fetchone()
             if not row or not secrets.compare_digest(
@@ -176,8 +178,18 @@ class ProjectInbox:
                     if signature != work["result_hash"]:
                         raise ValueError("A different result is already retained.")
                     return work["receipt"]
-                if work["state"] != "claimed" or work["expires_at"] <= time.time():
+                if work["state"] != "claimed":
                     raise ValueError("This lease is no longer active.")
+                context = None
+                if delivery_context is not None:
+                    if self.describe().get("result_delivery_contract") != RESULT_DELIVERY_CONTRACT:
+                        raise ValueError("This project has not enabled retained gateway result delivery.")
+                    context = validate_context(delivery_context, contribution_id, work, artifact, usage)
+                late = work["expires_at"] <= time.time()
+                if late and context is None:
+                    raise ValueError("This lease expired; late delivery requires the project's trusted original gateway receipt context.")
+                if work["task"]["project_id"] != self.describe()["id"]:
+                    raise ValueError("This assignment no longer belongs to the original project.")
                 report = artifact.get("report", artifact.get("rationale", ""))
                 if not isinstance(report, str) or len(report.strip()) < 30:
                     raise ValueError("Return a substantive report with evidence and limitations.")
@@ -192,6 +204,12 @@ class ProjectInbox:
                     "artifact_hash": fingerprint(artifact),
                     "contribution_id": contribution_id,
                 }
+                if context is not None:
+                    result["delivery"] = {"contract": RESULT_DELIVERY_CONTRACT,
+                        "command_id": context["command_id"], "gateway_received_at": context["received_at"],
+                        "started_at": context["started_at"], "execution_deadline": context["deadline"],
+                        "project_received_at": time.time(), "reservation_expired": late,
+                        "payload_fingerprint": context["payload_fingerprint"]}
                 work.update(state="received", receipt=result, result_hash=signature)
             db.execute(
                 "UPDATE work SET body=? WHERE id=?",
@@ -212,6 +230,7 @@ def scaffold(directory: Path, project: str, title: str, objective: str):
         integration_label="Project starter over MCP",
         visibility="unlisted",
         acceptance_scope="Reports are received for review. Scientific claims require separate verification.",
+        result_delivery_contract=RESULT_DELIVERY_CONTRACT,
     )
     if len(objective) < 20:
         raise ValueError("Provide the actual research question in at least 20 characters.")
@@ -279,9 +298,15 @@ def server(directory: Path, *, coordinator=False):
 
         @mcp.tool()
         def submit_result(
-            contribution_id: str, lease_token: str, artifact: dict, usage: dict
+            contribution_id: str, lease_token: str, artifact: dict, usage: dict,
+            delivery_context: dict | None = None,
         ) -> dict:
-            return project.finish(contribution_id, lease_token, artifact, usage)
+            from mcp.server.mcpserver.exceptions import ToolError
+
+            try:
+                return project.finish(contribution_id, lease_token, artifact, usage, delivery_context)
+            except ValueError as error:
+                raise ToolError(str(error)) from error
 
         @mcp.tool()
         def release_work(contribution_id: str, lease_token: str) -> dict:

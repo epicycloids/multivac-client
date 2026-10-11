@@ -32,6 +32,12 @@ fields against the offer. Projects can issue open-ended research briefs. Context
 bundles contain explicitly selected text resources and their hashes. The client
 downloads this context as data and does not execute it.
 
+Tasks may declare `execution_profile` and `required_assets`; each must be permitted
+by the approved offer. Existing `workbench_compute` tasks declare these in
+`compute.profile` and `compute.assets`, retaining the `python-sandbox-v1` default
+when the profile is omitted. Installing a runtime or registering a local asset
+does not authorize its use in every donation.
+
 The same contribution ID and offer must return the same claim. A changed offer
 under that ID is a conflict. Repeating an identical result returns the existing
 receipt without recording another finding. A changed result is a conflict.

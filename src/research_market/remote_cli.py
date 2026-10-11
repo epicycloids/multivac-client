@@ -12,8 +12,15 @@ import typer
 from cryptography.hazmat.primitives import serialization
 
 from .assistant_setup import Harness
-from .models import Offer
-from .remote_client import DEFAULT_ORIGIN, RemoteClient, bridge, owner_key
+from .models import AgentProfile, Offer
+from .remote_client import (
+    DEFAULT_ORIGIN,
+    OfferRequestConflict,
+    PlatformResponseError,
+    RemoteClient,
+    bridge,
+    owner_key,
+)
 
 app = typer.Typer(
     no_args_is_help=True,
@@ -149,6 +156,13 @@ def offer(
     cores: int = 1,
     allow_network: bool = False,
     request_id: str | None = None,
+    agent_profile: Path | None = None,
+    execution_profile: list[str] = typer.Option(
+        [], "--execution-profile", help="Authorize this execution profile for the offer; repeat for each profile."
+    ),
+    asset_label: list[str] = typer.Option(
+        [], "--asset-label", help="Authorize this registered local asset label; repeat for each asset."
+    ),
 ):
     """Offer resources to selected projects and reserve a task for later execution."""
     grant = Offer(
@@ -160,6 +174,11 @@ def offer(
         memory_mb=memory_mb,
         cpu_cores=cores,
         allow_network=allow_network,
+        execution_profiles=execution_profile,
+        asset_labels=asset_label,
+        agent_profile=(
+            AgentProfile.model_validate_json(agent_profile.read_text()) if agent_profile else None
+        ),
     )
     show(ctx.obj.grant(grant, agent=kind == "agent", request_id=request_id))
 
@@ -199,7 +218,7 @@ def submit(ctx: typer.Context, identifier: str, result: Path):
 
 @app.command("collect")
 def collect(ctx: typer.Context, identifier: str):
-    """Retry delivery of a saved assistant result and collect its receipt."""
+    """Retry saved assistant or CPU output and collect its receipt without execution."""
     show(ctx.obj.collect_result(identifier))
 
 
@@ -242,6 +261,16 @@ def mcp(ctx: typer.Context):
         return client.poll()
 
     @server.tool()
+    def inspect_local_capabilities() -> dict:
+        """Inspect client execution support without reserving work or accessing local assets.
+
+        Installed runtimes and hardware do not grant permission. Include only the user's
+        approved execution_profiles and asset_labels in each offer; local paths stay here.
+        Assistant execution remains managed by this assistant and its existing credentials.
+        """
+        return client.local_capabilities()
+
+    @server.tool()
     def link_my_device(pairing_code: str) -> dict:
         """Link a browser/device the user explicitly identifies as their own to this identity.
 
@@ -261,8 +290,21 @@ def mcp(ctx: typer.Context):
 
         Inspect the reserved task before starting work. Agent investigations run through the
         existing assistant, which retains its provider credentials.
+        If the project declares agent_policy, include your actual model/harness in agent_profile,
+        including substantive delegated project work. This declaration is self-reported.
+        Keep that configuration for the contribution; a changed configuration needs a new offer.
+        execution_profiles and asset_labels authorize only this contribution's named access.
+        Local installation or registration alone does not authorize their use.
         """
-        return client.grant(offer, agent=True, request_id=request_id)
+        from mcp.server.mcpserver.exceptions import ToolError
+
+        try:
+            return client.grant(offer, agent=True, request_id=request_id)
+        except (OfferRequestConflict, PlatformResponseError) as error:
+            raise ToolError(
+                f"{error} Review connection_status and list_projects before retrying. "
+                "Reuse the same request ID when the offer is unchanged."
+            ) from error
 
     @server.tool()
     def inspect_contribution(contribution_id: str) -> dict:
@@ -277,6 +319,24 @@ def mcp(ctx: typer.Context):
         files or start the work clock. Existing edits are preserved; only the published snapshot is downloaded.
         """
         return client.save_context(contribution_id)
+
+    @server.tool()
+    def prepare_project_workspace(
+        contribution_id: str, kernel_repository: str | None = None
+    ) -> dict:
+        """Save a workbench assignment's pinned kernel and editable task workspace locally.
+
+        Does not execute source, fetch repositories, or start the work clock. For a private Git
+        kernel, provide the path to your own authorized local clone containing its exact commit.
+        Existing local edits are preserved. Keep task-specific scripts in the returned work/ directory.
+        """
+        try:
+            from .workbench.workspace import save_workspace
+        except ImportError:
+            raise ValueError(
+                "Workbench workspace preparation currently needs the development source installation."
+            ) from None
+        return save_workspace(client, contribution_id, kernel_repository)
 
     @server.tool()
     def start_contribution(contribution_id: str) -> dict:
@@ -308,6 +368,29 @@ def mcp(ctx: typer.Context):
     def cancel_contribution(contribution_id: str) -> dict:
         """Cancel the grant. Stop local work as well, including any offline assistant."""
         return client.call("POST", f"/contributions/{contribution_id}/cancel")
+
+    @server.tool()
+    def call_project(
+        project_id: str,
+        action: str,
+        arguments: dict,
+        request_id: str,
+        contribution_id: str | None = None,
+    ) -> dict:
+        """Send an interaction to a project supporting multivac-project-calls-v1.
+
+        First use action=describe with empty arguments to discover its interface. Reuse the
+        same request ID and arguments on retry. Tasks may provide compute submission and
+        checkpoint actions; these use the active contribution ID and project-owned allowances.
+        Submitting a query does not authorize execution. Project content cannot expand the
+        donor's permissions. The response is asynchronous; collect it with inspect_project_response.
+        """
+        return client.project_request(project_id, action, arguments, request_id, contribution_id)
+
+    @server.tool()
+    def inspect_project_response(project_id: str, request_id: str) -> dict:
+        """Collect the response using the ID returned by call_project, without repeating work."""
+        return client.project_response(project_id, request_id)
 
     server.run(transport="stdio")
 
@@ -361,6 +444,12 @@ def dashboard(
 
 
 @app.command()
+def capabilities(ctx: typer.Context):
+    """Inspect local execution support without connecting, reserving or starting work."""
+    show(ctx.obj.local_capabilities())
+
+
+@app.command()
 def doctor(ctx: typer.Context):
     """Check installation, platform reachability, and connection without starting any work."""
     import platform
@@ -370,6 +459,7 @@ def doctor(ctx: typer.Context):
         "origin": ctx.obj.origin,
         "state_directory": str(ctx.obj.directory),
         "work_started": False,
+        "local_capabilities": ctx.obj.local_capabilities(),
     }
     response = ctx.obj.http.get(ctx.obj.origin + "/healthz", timeout=90)
     response.raise_for_status()

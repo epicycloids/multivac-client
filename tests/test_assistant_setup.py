@@ -72,7 +72,7 @@ async def test_bridge_check_starts_role_scoped_tools_without_platform_access(tmp
         assert "inspect_allocation" in result["tools"]
         assert "offer_resources" not in result["tools"]
     else:
-        assert "offer_resources" in result["tools"] and "recover_result" in result["tools"]
+        assert {"offer_resources", "recover_result", "inspect_local_capabilities"} <= set(result["tools"])
         assert "inspect_allocation" not in result["tools"]
     assert not (client.directory / "requests").exists()
     client.http.close()
@@ -153,6 +153,7 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
     )
     inbox = ProjectInbox(directory)
     records, leases, result_posts = {}, {}, []
+    readiness, offer_posts, start_posts = [False], [], []
     identity = {"id": "fixture-device", "role": "contributor", "projects": ["protocol-fixture"]}
 
     class Platform(BaseHTTPRequestHandler):
@@ -172,7 +173,8 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
             if self.path.endswith("/session"):
                 self.reply({"identity": identity})
             elif self.path.endswith("/projects"):
-                self.reply({"projects": [{"id": "protocol-fixture", "title": "Synthetic project"}]})
+                self.reply({"projects": [{"id": "protocol-fixture", "title": "Synthetic project",
+                                          "ready": readiness[0]}]})
             else:
                 self.reply(records[self.path.split("/")[-1]])
 
@@ -180,6 +182,10 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
             assert self.headers["Authorization"] == "Bearer synthetic-mcp-token"
             value = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
             if self.path.endswith("/contributions"):
+                offer_posts.append(value)
+                if not readiness[0]:
+                    self.reply({"detail": "Synthetic project not ready; inspect availability."}, 409)
+                    return
                 identifier = value["request_id"]
                 work = inbox.claim(value["offer"], identifier)
                 leases[identifier] = work["lease_token"]
@@ -194,6 +200,7 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
             else:
                 identifier = self.path.split("/")[-2]
                 if self.path.endswith("/start"):
+                    start_posts.append(identifier)
                     records[identifier].update(state="running", deadline=time.time() + 90)
                 elif self.path.endswith("/result"):
                     result_posts.append(value)
@@ -220,6 +227,12 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
         async with stdio_client(StdioServerParameters(**server, cwd=str(tmp_path))) as streams:
             async with ClientSession(*streams, read_timeout_seconds=10) as session:
                 await session.initialize()
+                tools = await session.list_tools()
+                offered_schema = next(tool for tool in tools.tools if tool.name == "offer_resources").model_dump(by_alias=True)
+                schema_text = json.dumps(offered_schema)
+                assert all(name in schema_text for name in ("execution_profiles", "asset_labels", "agent_profile"))
+                capabilities = await session.call_tool("inspect_local_capabilities", {})
+                assert not capabilities.is_error
 
                 async def call(name, args=None):
                     result = await session.call_tool(name, args or {})
@@ -240,10 +253,29 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
                     allow_network=True,
                     budget_seconds=90,
                 ).model_dump()
-                record = await call(
-                    "offer_resources", {"offer": offer, "request_id": "synthetic-cycle"}
-                )
+                offered = {"offer": offer, "request_id": "synthetic-cycle"}
+                denied = await session.call_tool("offer_resources", offered)
+                assert denied.is_error
+                reason = " ".join(item.text for item in denied.content if hasattr(item, "text"))
+                assert "Platform response 409" in reason and "Synthetic project not ready" in reason
+                assert "list_projects" in reason and "same request ID" in reason
+                assert "synthetic-mcp-token" not in reason
+                assert not records and not start_posts and inbox.read()["active"] == 0
+                readiness[0] = True
+                assert (await call("list_projects"))["projects"][0]["ready"]
+                record = await call("offer_resources", offered)
+                assert await call("offer_resources", offered) == record
                 assert record["state"] == "ready"
+                assert len(records) == 1 and inbox.read()["active"] == 1 and not start_posts
+                assert offer_posts[0] == offer_posts[1] == offer_posts[2]
+                assert json.loads(client.offer_request_path("synthetic-cycle").read_text()) == offer_posts[0]
+                preserved = client.offer_request_path("synthetic-cycle").read_bytes()
+                changed = {**offered, "offer": {**offer, "budget_seconds": 91}}
+                conflict = await session.call_tool("offer_resources", changed)
+                assert conflict.is_error
+                conflict_reason = " ".join(item.text for item in conflict.content if hasattr(item, "text"))
+                assert "new request ID" in conflict_reason and "original saved request" in conflict_reason
+                assert len(offer_posts) == 3 and client.offer_request_path("synthetic-cycle").read_bytes() == preserved
                 await call("inspect_contribution", {"contribution_id": "synthetic-cycle"})
                 await call("start_contribution", {"contribution_id": "synthetic-cycle"})
                 artifact = {
@@ -270,6 +302,7 @@ async def test_real_stdio_bridge_completes_synthetic_independent_project_cycle(t
         )
         assert len(inbox.read()["findings"]) == 1 and inbox.read()["active"] == 0
         assert len(records) == 1 and result_posts[0] == result_posts[1] == result_posts[2]
+        assert start_posts == ["synthetic-cycle"]
         saved = assistant_result_directory(client, "synthetic-cycle")
         assert json.loads((saved / "result.json").read_text())["artifact"] == artifact
         assert json.loads((saved / "receipt.json").read_text()) == completed["receipt"]

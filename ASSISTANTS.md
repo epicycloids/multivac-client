@@ -66,6 +66,13 @@ The assistant can call `connection_status`, `list_projects`, `offer_resources`,
 Reuse the request ID when retrying a reservation so an uncertain response does not
 create another task.
 
+The `0.4.0a3` candidate saves each request under the approved contributor identity
+and reuses its original body for equivalent retries. Changing an offer or its
+capabilities under that ID fails before transmission; choose a new request ID for
+a new agreement. Existing `0.4.0a2` request files are retained. A matching request
+can recover through the selected connection, while ambiguous or unreadable legacy
+data requires inspection instead of guessing its owner. See [upgrade details](RELEASE.md).
+
 ## Keep the result and receipt
 
 `return_result` saves the artifact and reported usage on this device before
