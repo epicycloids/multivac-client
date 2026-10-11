@@ -1,0 +1,102 @@
+{
+  "name": "multivac-cpu-donor",
+  "version": "0.1.0a1",
+  "status": "public CPU donor release candidate",
+  "private": false,
+  "history_included": false,
+  "dependency_lock_sha256": "f648ba6c90743b56085fc269dda00f1adaf151e49573c0478c0a2e837e7f0a8a",
+  "files": [
+    {
+      "path": "src/research_market/__init__.py",
+      "sha256": "91f9b372ebd4482fc322bd7fa9593c6ee0ee2f5fdda92c8e7337978d305b9ac9"
+    },
+    {
+      "path": "src/research_market/config.py",
+      "sha256": "88f37b29726d93b2d84c112164e16aaeadecd1eb381239dca0b65b82cda91a47"
+    },
+    {
+      "path": "src/research_market/models.py",
+      "sha256": "0e3b43977ecad5ba12ecbe7ae54f9f87b1717ff7ca1ef5520f388b1a46b4182c"
+    },
+    {
+      "path": "src/research_market/wire.py",
+      "sha256": "aba5f25d26381e5b99b3a9a5b22a8b1c315769117d83b62a29883744b9ddfdf6"
+    },
+    {
+      "path": "src/research_market/contracts.py",
+      "sha256": "fae72a1fa8a3256bb86f1d3237865269b97a06f8d0f1138ec42c4792115eb087"
+    },
+    {
+      "path": "src/research_market/remote_client.py",
+      "sha256": "9dc4f22f74ef08f6a17d4bd01b7488344e51d420ffe8a07fd81c2c1a8eec3f31"
+    },
+    {
+      "path": "src/research_market/context_bundle.py",
+      "sha256": "e92c2d03c91f61ad112164ea5a1a0e84df6aa3629fbcc50d0e7b00c549351973"
+    },
+    {
+      "path": "src/research_market/cpu_profile.py",
+      "sha256": "3bd67dd1be1724d081fa793352b318944d0dcafdf479280dc5f632e1269238a6"
+    },
+    {
+      "path": "src/research_market/cpu_entry.py",
+      "sha256": "f35dbee84247b15cba3c0b33fc0f1c70439fd8683e5fd0a10832bd1baf913d70"
+    },
+    {
+      "path": "src/research_market/cpu_cli.py",
+      "sha256": "4efd1dfa88f9cd16a3d7effd0541ddc999a6c85e0d58f08bfbd3d9f4dbe882fc"
+    },
+    {
+      "path": "src/research_market/resources.py",
+      "sha256": "79f49d7ca25f24824974c2a943cddb7c1290d3b61c5707e7bead588bc383eec8"
+    },
+    {
+      "path": "src/research_market/executor.py",
+      "sha256": "b6d0781ce59a59878ffc746e44afc2872c4e2c3cabcaaf9a940114a45ff6b412"
+    },
+    {
+      "path": "src/research_market/trefethen.py",
+      "sha256": "e40385271260b21f829f3a43eb44b18df7fe3a48663b8b0f658098b145fd33a2"
+    },
+    {
+      "path": "src/research_market/trefethen_kernel.py",
+      "sha256": "14364e887593b718ace177932f92f5ea31dc44163fb0492a13702a63465e3263"
+    },
+    {
+      "path": "tests/conftest.py",
+      "sha256": "6d0cc8f1dcf4aaf8be470cdfbae13a45dcd30cc81de636c26e01d0ca6327207e"
+    },
+    {
+      "path": "tests/test_cpu_donor.py",
+      "sha256": "d825b1d9233b0af34ebbb62971e1fd2545f490adc935878d9fa852d77ab329c7"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "6035bb65762f7802462637d14a88d39f92153762c6b35d781682345e3666299c"
+    },
+    {
+      "path": "README.md",
+      "sha256": "31233ed379eb7a41da5a70477b0fc44994ea27eb1d54a1582a6d2f6bfc5fd9e6"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "6942e223315cb539e7f609c6744f23fc8a87e38d15ee1d966b4acc5cdd7e5034"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "f648ba6c90743b56085fc269dda00f1adaf151e49573c0478c0a2e837e7f0a8a"
+    },
+    {
+      "path": "requirements.lock",
+      "sha256": "f4be381caddb8c07b5edf38242886d1505f9635bdbf4430ef3ffb2d859831a2e"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "NOTICE",
+      "sha256": "6fd248c3fe7a6b543081caac8585a70484e94e646f6429ef022499bd30773574"
+    }
+  ]
+}
