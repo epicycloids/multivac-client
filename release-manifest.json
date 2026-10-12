@@ -116,7 +116,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "6836c462ccf649ad607ad3a03d1ae970588ee8efb23297835060e2db14e6f51e"
+      "sha256": "525df162bffc102b7f74faa333326d1594f56c5ef2d54ba8f7cb462341ab680c"
     },
     {
       "path": "PROTOCOL.md",
@@ -124,7 +124,7 @@
     },
     {
       "path": "PROJECTS.md",
-      "sha256": "aaf31f0041d802d68ad6710b3fda6a0975ad87c606c0e536ad9312ac0c43db7b"
+      "sha256": "d9e4af9ab4a4cd2887c18b2185a9e2bee6019405d241b494e796c4fdabed548c"
     },
     {
       "path": "PRIVACY.md",
@@ -144,7 +144,7 @@
     },
     {
       "path": "RELEASE.md",
-      "sha256": "d6bb96fa6e11bc25bff1f9d28cf9ce5f1448e69335ce36cdeec359f209e774ba"
+      "sha256": "750e8b4920db7952a40a5dd310533ea5e4eaa2f062bb957140dabe15bcc4d05a"
     },
     {
       "path": "LICENSE",

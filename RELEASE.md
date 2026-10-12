@@ -1,9 +1,10 @@
 # Version and upgrade compatibility
 
-`0.4.0a3` is an unpublished public-client candidate. Preparing or installing this
-candidate does not publish it or change the hosted `0.4.0a2` download. Preserve
-the earlier public wheel and private candidates until a qualified replacement is
-explicitly selected. This preview supports Linux with Python 3.12–3.14.
+`0.4.0a3` is a published portable-client preview, available from the
+[GitHub prerelease](https://github.com/epicycloids/multivac-client/releases/tag/v0.4.0a3)
+and [hosted download](https://multivac.onrender.com/downloads/multivac_client-0.4.0a3-py3-none-any.whl).
+Keep an existing installation on its selected version until you choose an upgrade
+at a natural pause. This preview supports Linux with Python 3.12–3.14.
 
 ## Scope of this distribution
 
@@ -28,7 +29,7 @@ The portable client does not supply a general CPU or GPU executor. Run
 An execution-profile or asset label records specific consent; it neither installs
 a runtime nor confines an assistant's tools or spending.
 
-## Changes from the installed public 0.4.0a2
+## Changes from public 0.4.0a2
 
 - Offer requests are immutable and scoped to the approved contributor identity.
   An equivalent retry sends the original saved body. Changed parameters fail
@@ -51,9 +52,9 @@ a runtime nor confines an assistant's tools or spending.
 
 | Outcome | Requirement |
 | --- | --- |
-| Immutable local offer retry, clearer MCP errors, typed consent and capability inspection | Candidate contributor client. The current hosted pilot understands the consent fields; inspect another gateway's compatibility before using optional fields. |
+| Immutable local offer retry, clearer MCP errors, typed consent and capability inspection | `0.4.0a3` contributor client. The current hosted pilot understands the consent fields; inspect another gateway's compatibility before using optional fields. |
 | Ordinary claim/report/receipt recovery through the five MCP tools | Compatible gateway and project endpoint. The basic interface is unchanged. An old starter still applies its own first-delivery expiry. |
-| First report delivered after reservation expiry | Gateway with `multivac-retained-result-v1`, upgraded owner bridge and endpoint, and project metadata explicitly opting in. New candidate starters opt in. |
+| First report delivered after reservation expiry | Gateway with `multivac-retained-result-v1`, upgraded owner bridge and endpoint, and project metadata explicitly opting in. New `0.4.0a3` starters opt in. |
 | Existing `0.4.0a2` donor with an upgraded opted-in host | Ordinary reports remain compatible; gateway/bridge/host handle retained-delivery evidence. This does not fix the old donor's local offer cache. |
 | Existing third-party endpoint without the delivery contract | Ordinary delivery follows that endpoint's rules. No automatic deadline extension or late-first-delivery promise. |
 | Full private research adapter or CPU/GPU execution | Separately installed, compatible project/runner release; not distributed here. Preserve its original running pin. |
@@ -64,10 +65,10 @@ endpoint should accept retained gateway context only through the project owner's
 scoped bridge; donor-supplied timestamps are not authority. Released, reassigned,
 cancelled, late or conflicting work cannot be revived by this contract.
 
-## Install or upgrade a reviewed candidate
+## Install or upgrade the reviewed preview
 
-Use a reviewed local wheel or source artifact. No public `0.4.0a3` download is
-assumed here. For an isolated wheel installation:
+Use the published wheel or source artifact linked above. For an isolated wheel
+installation:
 
 ```sh
 python3.13 -m venv /path/to/new-client-environment
