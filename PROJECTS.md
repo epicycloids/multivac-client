@@ -44,13 +44,12 @@ offered allowance and 30 minutes. An identical receipt already stored by the
 project can still be recovered later. A long-disconnected host can miss that first
 delivery window even while the gateway retains the contributor's saved report.
 
-The unpublished `0.4.0a3` release candidate supports the optional
+The published `0.4.0a3` preview supports the optional
 `metadata.result_delivery_contract = "multivac-retained-result-v1"` project setting.
-New candidate starters opt in; existing project operators must upgrade their local
+New `0.4.0a3` starters opt in; existing project operators must upgrade their local
 endpoint and explicitly add that setting to `project.json` after a qualified
-upgrade. Retain the project directory and SQLite database. This candidate has not
-been publicly released. Updating the hosted site alone cannot update another
-machine's installed starter. Public `0.4.0a2` donor clients can still send ordinary
+upgrade. Retain the project directory and SQLite database. Updating the hosted
+site alone cannot update another machine's installed starter. Public `0.4.0a2` donor clients can still send ordinary
 reports through the existing interface to an upgraded project. The gateway and
 owner's project bridge must also support this contract; see the [compatibility
 matrix and upgrade path](RELEASE.md).

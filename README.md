@@ -15,11 +15,12 @@ have been exercised with synthetic provider responses. OAuth and inference with 
 real ChatGPT account remain unverified. The invited pilot supports contributions
 through the MCP bridge.
 
-This source prepares the **unpublished `0.4.0a3` release candidate**. The hosted
-download remains `0.4.0a2` until a separate release decision. See
-[version, upgrade and project-host compatibility](RELEASE.md) before installing or
-upgrading a candidate. Updating the hosted site does not update a local client or
-project endpoint.
+The **`0.4.0a3` portable preview is published** in the
+[GitHub prerelease](https://github.com/epicycloids/multivac-client/releases/tag/v0.4.0a3)
+and [hosted download](https://multivac.onrender.com/downloads/multivac_client-0.4.0a3-py3-none-any.whl).
+See [version, upgrade and project-host compatibility](RELEASE.md) before installing
+or upgrading. Updating the hosted site does not update a local client or project
+endpoint.
 
 ## Run from source
 
